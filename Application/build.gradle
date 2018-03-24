@@ -8,6 +8,8 @@ buildscript {
         maven {
             url "https://repo.eclipse.org/content/repositories/paho-releases/"
         }
+
+
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
@@ -22,9 +24,17 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            url "https://github.com/QuickBlox/quickblox-android-sdk-releases/raw/master/"
+        }
     }
 }
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    // QuickBlox SDK version
+    qbSdkVersion = '3.7.0'
 }

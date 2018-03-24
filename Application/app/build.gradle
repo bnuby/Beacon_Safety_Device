@@ -16,28 +16,32 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
-
     // https://mvnrepository.com/artifact/org.altbeacon/android-beacon-library
-    compile group: 'org.altbeacon', name: 'android-beacon-library', version: '2.13.1'
-
+    compile 'org.altbeacon:android-beacon-library:2.13.1'
     // https://www.hivemq.com/blog/mqtt-client-library-enyclopedia-paho-android-service
     compile('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
         exclude module: 'support-v4'
     }
 
+    // https://quickblox.com/developers/Sample-webrtc-android
+//    compile "com.quickblox:quickblox-android-sdk-content:$rootProject.qbSdkVersion"
+//    implementation "com.quickblox:quickblox-android-sdk-videochat-webrtc:$rootProject.qbSdkVersion"
+//    implementation ("com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion")
 
 
     // add the following line, and replace "1.0.12" with the latest version
     // of Estimote Android SDK; you'll find the latest version number on:
     //   https://github.com/Estimote/Android-SDK/releases
-//    compile 'com.estimote:sdk:1.0.12'
+    //    compile 'com.estimote:sdk:1.0.12'
+    implementation 'com.android.support:design:26.1.0'
 }
