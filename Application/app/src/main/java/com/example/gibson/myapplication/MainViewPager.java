@@ -15,6 +15,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
@@ -29,13 +30,12 @@ import org.json.JSONObject;
 
 public class MainViewPager extends AppCompatActivity {
 
-  private final int NUM_PAGES = 2;
+  private final int NUM_PAGES = 4;
   public static MQTT_SERVICE mqtt_service;
   private static DatabaseService databaseService;
   private ViewPager viewPager;
   private PagerAdapter pagerAdapter;
   private TabLayout tabLayout;
-  private Toolbar toolbar;
 
   public static DatabaseService getDatabaseService() {
     return databaseService;
@@ -61,6 +61,7 @@ public class MainViewPager extends AppCompatActivity {
         Log.v("host", host);
 
         mqtt_service = new MQTT_SERVICE(this, host, topic, username, password);
+        mqtt_service.setStatusTextView((TextView) findViewById(R.id.mqtt_status));
         mqtt_service.startConnect();
       } catch (JSONException e) {
         e.printStackTrace();
@@ -72,8 +73,6 @@ public class MainViewPager extends AppCompatActivity {
     viewPager = findViewById(R.id.pager);
     pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
     viewPager.setAdapter(pagerAdapter);
-    toolbar = findViewById(R.id.toolbar);
-    setSupportActionBar(toolbar);
     tabLayout.setupWithViewPager(viewPager);
   }
 
@@ -120,10 +119,10 @@ public class MainViewPager extends AppCompatActivity {
           return new MainActivity();
         case 1:
           return new ContactActivity();
-//        case 2:
-//          return new ContactActivity();
-//        case 3:
-//          return new ContactActivity();
+        case 2:
+          return new BeaconActivity();
+        case 3:
+          return new SettingActivity();
       }
       return null;
     }

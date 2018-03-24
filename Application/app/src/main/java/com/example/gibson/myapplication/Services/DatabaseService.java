@@ -54,13 +54,11 @@ public class DatabaseService extends SQLiteOpenHelper {
             null,
             null);
     JSONArray obj = null;
-    while(cursor.moveToNext()) {
-      String data = cursorToJson(cursor);
-      try {
-        obj = new JSONArray(data);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+    String data = cursorToJson(cursor);
+    try {
+      obj = new JSONArray(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     return obj;
   }
@@ -136,13 +134,12 @@ public class DatabaseService extends SQLiteOpenHelper {
             null,
             null);
     JSONArray obj = null;
-    while(cursor.moveToNext()) {
-      try {
-        String data = cursorToJson(cursor);
-        obj = new JSONArray(data);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+    try {
+      String data = cursorToJson(cursor);
+      Log.v("MQTT", data);
+      obj = new JSONArray(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
     }
     return obj;
   }

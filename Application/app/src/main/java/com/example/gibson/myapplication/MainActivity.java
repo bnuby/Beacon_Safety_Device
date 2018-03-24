@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static com.example.gibson.myapplication.MainViewPager.getDatabaseService;
 import static com.example.gibson.myapplication.MainViewPager.mqtt_service;
 
 
@@ -39,12 +40,13 @@ public class MainActivity extends Fragment implements View.OnClickListener {
 
 //  private MQTT_SERVICE mqtt_service;
 
-  TextView mqttStatusTV;
+//  TextView mqttStatusTV;
   ListView listView;
-  EditText publishET;
-  Button scanBtn;
-  Button sendBtn;
+//  EditText publishET;
+//  Button scanBtn;
+//  Button sendBtn;
   JSONArray beaconArray;
+  ArrayList<HashMap<String,Object>> list;
 
   protected ScanCallback mScanCallback = new ScanCallback() {
     @Override
@@ -60,6 +62,13 @@ public class MainActivity extends Fragment implements View.OnClickListener {
 //        accuracyTV.setText(String.valueOf(calculateAccuracy(txPower, mRssi)));
 //        distanceTV.setText(String.valueOf(calculateDistance(txPower, mRssi)));
 //      }
+      for(HashMap<String, Object> i : list) {
+        if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
+          i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
+        }
+      }
+      listView.invalidateViews();
+
     }
   };
 
@@ -89,19 +98,19 @@ public class MainActivity extends Fragment implements View.OnClickListener {
         startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 2);
       }
       mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+      mBluetoothLeScanner.startScan(mScanCallback);
     }
 
     return rootview;
   }
 
   void initialize(ViewGroup group) {
-    mqttStatusTV = group.findViewById(R.id.mqttStatus);
-    publishET = group.findViewById(R.id.publishET);
-    scanBtn = group.findViewById(R.id.scanBtn);
-    sendBtn = group.findViewById(R.id.publishBtn);
-
-    scanBtn.setOnClickListener(this);
-    sendBtn.setOnClickListener(this);
+//    mqttStatusTV = group.findViewById(R.id.mqttStatus);
+//    publishET = group.findViewById(R.id.publishET);
+//    scanBtn = group.findViewById(R.id.scanBtn);
+//    sendBtn = group.findViewById(R.id.publishBtn);
+//    scanBtn.setOnClickListener(this);
+//    sendBtn.setOnClickListener(this);
 
     _instanceVG = group;
     _instance = group.getRootView();
@@ -111,7 +120,7 @@ public class MainActivity extends Fragment implements View.OnClickListener {
     listView = group.findViewById(R.id.listView);
 
     beaconArray = MainViewPager.getDatabaseService().getBeacons();
-    ArrayList<HashMap<String,Object>> list = new ArrayList<>();
+    list = new ArrayList<>();
 
     for (int i = 0; i < beaconArray.length(); i++) {
       try {
@@ -130,8 +139,8 @@ public class MainActivity extends Fragment implements View.OnClickListener {
             _instance.getContext(),
             list,
             R.layout.beacon_list_row,
-            new String[]{"name", "mac", "distance"},
-            new int[] {R.id.beacon_nameTV, R.id.beacon_macTV, R.id.beacon_distanceTV}
+            new String[]{"name", "distance"},
+            new int[] {R.id.beacon_nameTV, R.id.beacon_distanceTV}
     );
     listView.setAdapter(adapter);
   }
@@ -168,9 +177,12 @@ public class MainActivity extends Fragment implements View.OnClickListener {
   }
 
   public double calculateDistance(int txPower, double rssi) {
+    Log.v("TXPOWER", String.valueOf(txPower));
+    Log.v("RSSI", String.valueOf(rssi));
     double iRssi = Math.abs(rssi);
-    double power = (iRssi - 59) / (10 * 2.0);
-    return Math.pow(10, power);
+//    double power = (iRssi - 59) / (15 * 2.0);
+//    return Math.pow(10, power);
+    return (1.12900922 * Math.pow(10, -13) * Math.pow(iRssi, 7.068735405));
   }
 
   private String getDistance(Double accuracy) {
@@ -188,20 +200,20 @@ public class MainActivity extends Fragment implements View.OnClickListener {
   @Override
   public void onClick(View view) {
     switch (view.getId()) {
-      case R.id.scanBtn:
-        Button scanBtn = _instance.findViewById(R.id.scanBtn);
-        if(scanBtn.getText().equals("Scan")) {
-          Log.v("scanner", "Button");
-          mBluetoothLeScanner.startScan(mScanCallback);
-          scanBtn.setText("Stopped Scan");
-        } else {
-          mBluetoothLeScanner.stopScan(mScanCallback);
-          scanBtn.setText("Scan");
-        }
-        break;
-      case R.id.publishBtn:
-        mqtt_service.publishMessage("test", publishET.getText().toString());
-        break;
+//      case R.id.scanBtn:
+//        Button scanBtn = _instance.findViewById(R.id.scanBtn);
+//        if(scanBtn.getText().equals("Scan")) {
+//          Log.v("scanner", "Button");
+//          mBluetoothLeScanner.startScan(mScanCallback);
+//          scanBtn.setText("Stopped Scan");
+//        } else {
+//          mBluetoothLeScanner.stopScan(mScanCallback);
+//          scanBtn.setText("Scan");
+//        }
+//        break;
+//      case R.id.publishBtn:
+//        mqtt_service.publishMessage("test", publishET.getText().toString());
+//        break;
     }
   }
 

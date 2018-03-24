@@ -6,15 +6,6 @@
     android:orientation="vertical"
     android:weightSum="1">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="?attr/colorButtonNormal"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="@style/Base.Widget.AppCompat.Light.ActionBar"
-        app:popupTheme="@style/Theme.AppCompat.Light" />
-
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
         android:layout_width="match_parent"
@@ -25,7 +16,7 @@
             android:id="@+id/tabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom">
+            app:tabIndicatorColor="@color/colorPrimary">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem"

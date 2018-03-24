@@ -2,10 +2,14 @@ package com.example.gibson.myapplication;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
+
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -34,69 +38,74 @@ import org.json.JSONObject;
  * Created by gibson on 21/03/2018.
  */
 
-public class BeaconActivity extends AppCompatActivity implements View.OnClickListener, TextWatcher, View.OnKeyListener{
+public class BeaconActivity extends Fragment implements View.OnClickListener, TextWatcher, View.OnKeyListener{
 
   private ListView beacon_listView;
   private JSONArray beaconArray;
+  private View _instance;
   AlertDialog dialog;
   EditText nameET;
   EditText[] macET;
   EditText distanceET;
   View dialog_layout;
+  Button addBtn;
 
+//  @Override
+//  protected void onCreate(@Nullable Bundle savedInstanceState) {
+//    super.onCreate(savedInstanceState);
+//    setContentView(R.layout.activity_beacon);
+//    Toolbar toolbar = findViewById(R.id.toolbar_beacon);
+//
+//    setSupportActionBar(toolbar);
+//    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//    init();
+//  }
+
+  @Nullable
   @Override
-  protected void onCreate(@Nullable Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_beacon);
-    Toolbar toolbar = findViewById(R.id.toolbar_beacon);
-
-    setSupportActionBar(toolbar);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    init();
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    _instance = inflater.inflate(R.layout.activity_beacon, null);
+    init(_instance);
+    return _instance;
   }
 
-  private void init() {
+  private void init(View view) {
     macET = new EditText[6];
-    beacon_listView = findViewById(R.id.beacon_table_list);
+    beacon_listView = view.findViewById(R.id.beacon_table_list);
     beaconArray = MainViewPager.getDatabaseService().getBeacons();
-    BeaconTableAdapter adapter = new BeaconTableAdapter(this);
+    addBtn = view.findViewById(R.id.beacon_addBtn);
+    addBtn.setOnClickListener(this);
+    BeaconTableAdapter adapter = new BeaconTableAdapter(_instance.getContext());
     beacon_listView.setAdapter(adapter);
     beacon_listView.setMotionEventSplittingEnabled(true);
   }
 
-  @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
-    getMenuInflater().inflate(R.menu.toolbar_beacon, menu);
-    return super.onCreateOptionsMenu(menu);
-  }
-
+  @RequiresApi(api = Build.VERSION_CODES.O)
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch(item.getItemId()) {
       // Add Dialog
       case R.id.action_beacon_addBtn:
+
         dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon, null);
         nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
         for(int i = 1; i <= 6; i++) {
-          macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET"+i, "id", this.getPackageName()));
+          macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET"+i, "id", _instance.getContext().getPackageName()));
           macET[i-1].setOnKeyListener(this);
           macET[i-1].addTextChangedListener(this);
         }
-//        macET = dialog_layout.findViewById(R.id.beacon_dialog_macET);
+
         distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
         final Button okBtn = dialog_layout.findViewById(R.id.beacon_dialog_addBtn);
         final Button cancelBtn = dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn);
         okBtn.setOnClickListener(this);
         cancelBtn.setOnClickListener(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
+        AlertDialog.Builder builder = new AlertDialog.Builder(_instance.getContext())
                 .setView(dialog_layout)
                 .setTitle("Add Beacon");
         dialog = builder.create();
         dialog.create();
         dialog.show();
-        break;
-      case android.R.id.home:
-        finish();
         break;
     }
     return super.onOptionsItemSelected(item);
@@ -106,13 +115,35 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
   public void onClick(View view) {
     String mac;
     switch(view.getId()) {
+      case R.id.beacon_addBtn:
+        dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon, null);
+        nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
+        for(int i = 1; i <= 6; i++) {
+          macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET"+i, "id", _instance.getContext().getPackageName()));
+          macET[i-1].setOnKeyListener(this);
+          macET[i-1].addTextChangedListener(this);
+        }
+//        macET = dialog_layout.findViewById(R.id.beacon_dialog_macET);
+        distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
+        final Button okBtn = dialog_layout.findViewById(R.id.beacon_dialog_addBtn);
+        final Button cancelBtn = dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn);
+        okBtn.setOnClickListener(this);
+        cancelBtn.setOnClickListener(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(_instance.getContext())
+                .setView(dialog_layout)
+                .setTitle("Add Beacon");
+        dialog = builder.create();
+        dialog.create();
+        dialog.show();
+        break;
+
       case R.id.beacon_dialog_addBtn:
           String name = nameET.getText().toString();
           mac = MainActivity.getMacAddress(macET);
           String distanceText = distanceET.getText().toString();
           double distance = distanceText.equals("") ? 0: Double.parseDouble(distanceText.toString());
           if(mac.length() < 17) {
-            Toast.makeText(this, "Mac Address is too short!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(_instance.getContext(), "Mac Address is too short!", Toast.LENGTH_SHORT).show();
             break;
           }
           long status = MainViewPager.getDatabaseService().insertBeacon(name, mac, distance);
@@ -124,7 +155,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
               e.printStackTrace();
             }
           else
-            new AlertDialog.Builder(this).setMessage("Mac Address is Used!")
+            new AlertDialog.Builder(_instance.getContext()).setMessage("Mac Address is Used!")
                     .setNeutralButton("OK", new DialogInterface.OnClickListener() {
                       @Override
                       public void onClick(DialogInterface dialogInterface, int i) { }}).create().show();
@@ -196,17 +227,16 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
       } else if(macET[4].hasFocus()) {
         macET[5].requestFocus();
       } else if(macET[5].hasFocus()) {
-        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(dialog_layout.getWindowToken(), 0);
+        distanceET.requestFocus();
       }
     }
   }
 
   public class BeaconTableAdapter extends BaseAdapter {
 
-    private Activity activity;
-    public BeaconTableAdapter(Activity activity) {
-      this.activity = activity;
+    private Context context;
+    public BeaconTableAdapter(Context context) {
+      this.context = context;
     }
 
     @Override
@@ -228,7 +258,7 @@ public class BeaconActivity extends AppCompatActivity implements View.OnClickLis
     public View getView(final int i, View view, ViewGroup viewGroup) {
       View view1 = view;
       if(view1 == null){
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         view1 = inflater.inflate(R.layout.beacon_list_row2, null);
       }
 

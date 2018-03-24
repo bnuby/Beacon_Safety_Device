@@ -77,13 +77,20 @@ public class MQTT_SERVICE implements MqttCallback {
     };
 
     try {
+      if(options != null) {
+        cancelConnect();
+      }
       client = new MqttClient(host, "", new MemoryPersistence());
       client.setCallback(this);
 
       options = new MqttConnectOptions();
       options.setCleanSession(true);
-      options.setUserName(username);
-      options.setPassword(password.toCharArray());
+
+      if(!username.equals("") || !password.equals("")) {
+        options.setUserName(username);
+        options.setPassword(password.toCharArray());
+      }
+
       options.setConnectionTimeout(10);
       options.setKeepAliveInterval(20);
 
@@ -137,6 +144,10 @@ public class MQTT_SERVICE implements MqttCallback {
           statusTV.setText(mainContext.getResources().getString(R.string.mqtt_connecting));
           statusTV.setTextColor(mainContext.getResources().getColor(android.R.color.holo_blue_dark, null));
           break;
+        case Not_Connected:
+          statusTV.setText(mainContext.getResources().getString(R.string.mqtt_not_connected));
+          statusTV.setTextColor(mainContext.getResources().getColor(android.R.color.darker_gray, null));
+          break;
         case Connected:
           statusTV.setText(mainContext.getResources().getString(R.string.mqtt_connected));
           statusTV.setTextColor(mainContext.getResources().getColor(android.R.color.holo_green_dark, null));
@@ -162,6 +173,7 @@ public class MQTT_SERVICE implements MqttCallback {
   }
 
   public void cancelConnect() {
+    setTextViewStatus(MqttStatus.Not_Connected);
     scheduler.shutdown();
     scheduler = null;
   }
