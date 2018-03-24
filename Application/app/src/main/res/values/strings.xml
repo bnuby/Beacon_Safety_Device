@@ -20,5 +20,7 @@
     <string name="mqtt_username">Username</string>
     <string name="mqtt_password">Password</string>
     <string name="login">Login</string>
+    <string name="update">Update</string>
+    <string name="add">Add</string>
     <string name="cancel">Cancel</string>
 </resources>

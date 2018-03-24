@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * Created by gibson on 20/03/2018.
  */
 
-public class MQTT_SERVICE implements MqttCallback {
+public class MQTT_SERVICE {
 
   // MQTT SERVER DEFAULT PARAMETER
   private MqttClient client;
@@ -44,6 +44,7 @@ public class MQTT_SERVICE implements MqttCallback {
   private Context mainContext;
   private TextView statusTV;
   private List<String> feedback;
+  private MqttStatus status;
 
   public MQTT_SERVICE(final Context context, String host, String topic, String username, String password) {
     mainContext = context;
@@ -62,14 +63,17 @@ public class MQTT_SERVICE implements MqttCallback {
                   Toast.LENGTH_SHORT).show();
           System.out.println("-----------------------------");
         } else if(msg.what == 2) {
+          status = MqttStatus.Connected;
           setTextViewStatus(MqttStatus.Connected);
           Toast.makeText(mainContext, "连接成功", Toast.LENGTH_SHORT).show();
           try {
             client.subscribe(myTopic, 1);
+            client.subscribe("before", 1);
           } catch (Exception e) {
             e.printStackTrace();
           }
         } else if(msg.what == 3) {
+          status = MqttStatus.Connecting;
           setTextViewStatus(MqttStatus.Failed);
           Toast.makeText(mainContext, "连接失败，系统正在重连", Toast.LENGTH_SHORT).show();
         }
@@ -81,12 +85,11 @@ public class MQTT_SERVICE implements MqttCallback {
         cancelConnect();
       }
       client = new MqttClient(host, "", new MemoryPersistence());
-      client.setCallback(this);
 
       options = new MqttConnectOptions();
       options.setCleanSession(true);
 
-      if(!username.equals("") || !password.equals("")) {
+      if(!username.equals("") && !password.equals("")) {
         options.setUserName(username);
         options.setPassword(password.toCharArray());
       }
@@ -146,7 +149,7 @@ public class MQTT_SERVICE implements MqttCallback {
           break;
         case Not_Connected:
           statusTV.setText(mainContext.getResources().getString(R.string.mqtt_not_connected));
-          statusTV.setTextColor(mainContext.getResources().getColor(android.R.color.darker_gray, null));
+          statusTV.setTextColor(mainContext.getResources().getColor(R.color.gray, null));
           break;
         case Connected:
           statusTV.setText(mainContext.getResources().getString(R.string.mqtt_connected));
@@ -157,6 +160,7 @@ public class MQTT_SERVICE implements MqttCallback {
   }
 
   public void startConnect() {
+    setTextViewStatus(MqttStatus.Connecting);
     scheduler = Executors.newSingleThreadScheduledExecutor();
     Log.v("Scheduler", "Before");
     scheduler.scheduleAtFixedRate(new Runnable() {
@@ -199,7 +203,11 @@ public class MQTT_SERVICE implements MqttCallback {
   }
 
   public void setStatusTextView(TextView statusTV) {
+
     this.statusTV = statusTV;
+    if(status != null) {
+      setTextViewStatus(status);
+    }
   }
 
   public void publishMessage(String topic, String message) {
@@ -224,27 +232,6 @@ public class MQTT_SERVICE implements MqttCallback {
 
   public List<String> getMessage() {
     return feedback;
-  }
-
-  @Override
-  public void connectionLost(Throwable cause) {
-    Log.v("connectionLost", cause.getMessage());
-
-  }
-
-  @Override
-  public void messageArrived(String topic, MqttMessage message) throws Exception {
-    Log.v("messageArrived", new String(message.getPayload()));
-    feedback.add(new String(message.getPayload()));
-  }
-
-  @Override
-  public void deliveryComplete(IMqttDeliveryToken token) {
-    try {
-      Log.v("deliveryCompleted", token.getMessage().toString());
-    } catch (MqttException e) {
-      e.printStackTrace();
-    }
   }
 }
 enum MqttStatus {

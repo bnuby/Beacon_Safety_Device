@@ -3,6 +3,7 @@ package com.example.gibson.myapplication;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -51,7 +52,8 @@ public class MainViewPager extends AppCompatActivity {
 
   public void init() {
     JSONArray mqttArray = getDatabaseService().getMqtt();
-    if(mqttArray != null && mqttArray.length() == 0) {
+    Log.v("mqttarray", mqttArray.toString());
+    if(mqttArray != null && mqttArray.length() != 0) {
       try {
         JSONObject mqttObj = mqttArray.getJSONObject(0);
         String host = "tcp://" + mqttObj.getString("host");
@@ -61,13 +63,12 @@ public class MainViewPager extends AppCompatActivity {
         Log.v("host", host);
 
         mqtt_service = new MQTT_SERVICE(this, host, topic, username, password);
-        mqtt_service.setStatusTextView((TextView) findViewById(R.id.mqtt_status));
         mqtt_service.startConnect();
+
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
-
 
     tabLayout = findViewById(R.id.tabLayout);
     viewPager = findViewById(R.id.pager);

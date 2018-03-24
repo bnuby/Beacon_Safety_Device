@@ -115,7 +115,11 @@ public class DatabaseService extends SQLiteOpenHelper {
     data.put("name", name);
     data.put("mac", mac);
     data.put("alert_distance", alert_distance);
-    return db.update("Beacon_Receivers", data, "mac = " + oldMac,null );
+    Log.v("name", name);
+    Log.v("mac", mac);
+    Log.v("distance", alert_distance + "");
+
+    return db.update("Beacon_Receivers", data, "mac = '" + oldMac + "'",null );
   }
 
   public int deleteBeacon(String mac) {

@@ -82,6 +82,11 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
 
     loginBtn = _instance.findViewById(R.id.mqtt_login);
     loginBtn.setOnClickListener(this);
+
+    if(mqtt_service!=null) {
+      mqtt_service.setStatusTextView(mqtt_status);
+      loginBtn.setText(R.string.cancel);
+    }
   }
 
 //  @Override

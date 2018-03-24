@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:gravity="center"
-                    android:text="MAC"
+                    android:text="@string/mac"
                     android:textSize="18sp" />
 
                 <TextView
@@ -78,7 +78,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="0.25"
                     android:gravity="center"
-                    android:text="Distance"
+                    android:text="@string/distance"
                     android:textSize="18sp" />
 
                 <TextView
