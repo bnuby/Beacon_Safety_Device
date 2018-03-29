@@ -1,14 +1,22 @@
 package com.example.gibson.myapplication;
 
+import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,12 +26,14 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.nio.ByteBuffer;
+import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -32,9 +42,9 @@ import static com.example.gibson.myapplication.MainViewPager.mqtt_service;
 
 
 public class MainActivity extends Fragment implements View.OnClickListener {
-  private ViewGroup _instanceVG;
 
   private View _instance;
+  public static final int BluetoothRequestCode = 2;
   public BluetoothAdapter mBluetoothAdapter;
   public BluetoothLeScanner mBluetoothLeScanner;
 
@@ -82,7 +92,7 @@ public class MainActivity extends Fragment implements View.OnClickListener {
   @Nullable
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-    ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.activity_main, container, false);
+    final ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.activity_main, container, false);
     initialize(rootview);
 
 
@@ -91,17 +101,74 @@ public class MainActivity extends Fragment implements View.OnClickListener {
 //    mqtt_service.startConnect();
 
     // Bluetooth Get Adapter
+
+    if (ContextCompat.checkSelfPermission(rootview.getContext(),
+            Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+      if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) rootview.getContext(),
+              Manifest.permission.ACCESS_FINE_LOCATION)) {
+        ActivityCompat.requestPermissions((Activity) rootview.getContext(),
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                BluetoothRequestCode);
+      } else {
+       requestLocationPermission();
+      }
+    } else {
+      requestBluetoothScan();
+    }
+
+
+    return rootview;
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    switch(requestCode) {
+      case BluetoothRequestCode:
+        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+          requestBluetoothScan();
+        else
+          requestLocationPermission();
+        break;
+    }
+  }
+
+  void requestLocationPermission() {
+    final View view = _instance;
+    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+    builder.setTitle("Request Location Permission");
+    builder.setMessage("Please allow location permission or the apps will be quit");
+    builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        ActivityCompat.requestPermissions((Activity) view.getContext(),
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
+      }
+    });
+    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        System.exit(0);
+      }
+    });
+    builder.create().show();
+  }
+
+  void requestBluetoothScan() {
+
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
     if (mBluetoothAdapter != null){
       if(!mBluetoothAdapter.isEnabled()) {
-        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 2);
+        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), BluetoothRequestCode);
+      } else {
+        requestBluetoothScan();
       }
-      mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-      mBluetoothLeScanner.startScan(mScanCallback);
     }
-
-    return rootview;
+    mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+    mBluetoothLeScanner.startScan(mScanCallback);
   }
 
   void initialize(ViewGroup group) {
@@ -112,7 +179,6 @@ public class MainActivity extends Fragment implements View.OnClickListener {
 //    scanBtn.setOnClickListener(this);
 //    sendBtn.setOnClickListener(this);
 
-    _instanceVG = group;
     _instance = group.getRootView();
 
 
