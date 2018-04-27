@@ -19,6 +19,8 @@ android {
 
 }
 
+
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:26.1.0'
@@ -38,15 +40,7 @@ dependencies {
 
 
 
-    // https://quickblox.com/developers/Sample-webrtc-android
-//    compile "com.quickblox:quickblox-android-sdk-content:$rootProject.qbSdkVersion"
-//    implementation "com.quickblox:quickblox-android-sdk-videochat-webrtc:$rootProject.qbSdkVersion"
-//    implementation ("com.quickblox:quickblox-android-sdk-chat:$rootProject.qbSdkVersion")
+    implementation files('libs/sinch-android-rtc-3.8.0-VIDEO-SNAPSHOT.jar')
 
-
-    // add the following line, and replace "1.0.12" with the latest version
-    // of Estimote Android SDK; you'll find the latest version number on:
-    //   https://github.com/Estimote/Android-SDK/releases
-    //    compile 'com.estimote:sdk:1.0.12'
     implementation 'com.android.support:design:26.1.0'
 }

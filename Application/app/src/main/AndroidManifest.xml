@@ -37,6 +37,8 @@
 
         </activity>
 
+        <service android:name=".Services.SinchService"></service>
+
         <receiver android:name=".Services.CustomBroadcastReceiver">
             <intent-filter>
                 <action android:name="Login"/>

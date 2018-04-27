@@ -6,16 +6,14 @@ import android.util.Log;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.example.gibson.myapplication.MainViewPager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class RequestService {
-  static String host = "http://192.168.0.103:5000/";
+  static String host = "http://10.21.22.168:5000/";
 
   public static boolean loginRequest(String username, String password) {
 
