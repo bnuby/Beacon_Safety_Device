@@ -32,11 +32,14 @@ public class DatabaseService extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
     String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
-    String user = "Create Table User (username TEXT, password TEXT)";
+    String user = "Create Table User (username TEXT, password TEXT, name TEXT)";
+    String contact = "Create Table Contact (name TEXT, id TEXT, phone_number INTEGER)";
     String mqtt = "Create Table Mqtt (host TEXT, topic TEXT, username TEXT, password TEXT)";
+
     sqLiteDatabase.execSQL(beaconEntries);
     sqLiteDatabase.execSQL(user);
     sqLiteDatabase.execSQL(mqtt);
+    sqLiteDatabase.execSQL(contact);
   }
 
   @Override

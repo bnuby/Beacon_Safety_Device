@@ -1,9 +1,14 @@
 package com.example.gibson.myapplication;
 
 import android.Manifest;
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -21,14 +26,26 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Random;
+
+import static com.example.gibson.myapplication.MainActivity.BluetoothRequestCode;
 
 /**
  * Created by gibson on 20/03/2018.
@@ -40,8 +57,10 @@ public class MainViewPager extends AppCompatActivity {
   public static MQTT_SERVICE mqtt_service;
   private static DatabaseService databaseService;
   private ViewPager viewPager;
-  private PagerAdapter pagerAdapter;
+  private ViewPagerAdapter pagerAdapter;
   private TabLayout tabLayout;
+  public static RequestQueue requestQueue;
+  private static Context mContext;
 
   public static DatabaseService getDatabaseService() {
     return databaseService;
@@ -52,10 +71,24 @@ public class MainViewPager extends AppCompatActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_viewpager);
     databaseService = new DatabaseService(this);
+
+    if (ContextCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+      // Should we show an explanation?
+      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+              Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        ActivityCompat.requestPermissions(MainViewPager.this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
+      }
+    }
+
     init();
   }
 
   public void init() {
+    mContext = this;
     JSONArray mqttArray = getDatabaseService().getMqtt();
     Log.v("mqttarray", mqttArray.toString());
     if(mqttArray != null && mqttArray.length() != 0) {
@@ -81,12 +114,69 @@ public class MainViewPager extends AppCompatActivity {
     viewPager.setAdapter(pagerAdapter);
     tabLayout.setupWithViewPager(viewPager);
 
+    // Iterate over all tabs and set the custom view
+    for(int i = 0; i < NUM_PAGES; i++) {
+      TabLayout.Tab tab = tabLayout.getTabAt(i);
+      tab.setCustomView(pagerAdapter.getTabView(i));
+    }
+
+    // Initial Cache
+    Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+
+    // Set up the network to use HttpURLConnection as the HTTP client.
+    Network network = new BasicNetwork(new HurlStack());
+
+    requestQueue = new RequestQueue(cache, network);
+    requestQueue.start();
+
+  }
+
+  public void customTabIcons() {
+//    getLayoutInflater().inflate()
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     getMenuInflater().inflate(R.menu.toolbar_main, menu);
     return super.onCreateOptionsMenu(menu);
+  }
+
+
+  void requestLocationPermission() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("Request Location Permission");
+    builder.setMessage("Please allow location permission or the apps will be quit");
+    builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        ActivityCompat.requestPermissions(MainViewPager.this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
+      }
+    });
+    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        System.exit(0);
+      }
+    });
+    AlertDialog dialog = builder.create();
+    dialog.setCancelable(false);
+    dialog.show();
+  }
+
+  @Override
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    switch(requestCode) {
+      case BluetoothRequestCode:
+        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        } else {
+          requestLocationPermission();
+        }
+        break;
+    }
+
   }
 
   @Override
@@ -107,6 +197,16 @@ public class MainViewPager extends AppCompatActivity {
     return super.onOptionsItemSelected(item);
   }
 
+  public static void sendToast(String msg) {
+    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+  }
+
+  public static void sendBroadcastMessage(Intent intent) {
+    mContext.sendBroadcast(intent);
+  }
+
+
+  // Custom View Pager Adapter
   private class ViewPagerAdapter extends FragmentStatePagerAdapter {
 
     String[] title = new String[]{
@@ -133,16 +233,29 @@ public class MainViewPager extends AppCompatActivity {
       }
       return null;
     }
+//
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//      return title[position];
+//    }
 
-    @Override
-    public CharSequence getPageTitle(int position) {
-      return title[position];
+    public View getTabView(int position) {
+      View v = getLayoutInflater().inflate(R.layout.custom_tab, null);
+      TextView tab_item = v.findViewById(R.id.tab_item);
+      tab_item.setText(title[position]);
+      tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.tab_icon);
+
+      return v;
     }
+
+
 
     @Override
     public int getCount() {
       return NUM_PAGES;
     }
+
+
   }
 
 }

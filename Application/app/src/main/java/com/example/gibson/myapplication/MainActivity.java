@@ -2,16 +2,22 @@ package com.example.gibson.myapplication;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.app.job.JobScheduler;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -28,6 +34,8 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,6 +44,12 @@ import java.nio.ByteBuffer;
 import java.security.Permission;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static com.example.gibson.myapplication.MainViewPager.getDatabaseService;
 import static com.example.gibson.myapplication.MainViewPager.mqtt_service;
@@ -47,16 +61,15 @@ public class MainActivity extends Fragment implements View.OnClickListener {
   public static final int BluetoothRequestCode = 2;
   public BluetoothAdapter mBluetoothAdapter;
   public BluetoothLeScanner mBluetoothLeScanner;
+  ScheduledExecutorService checkLocation;
 
 //  private MQTT_SERVICE mqtt_service;
 
 //  TextView mqttStatusTV;
   ListView listView;
-//  EditText publishET;
-//  Button scanBtn;
-//  Button sendBtn;
   JSONArray beaconArray;
   ArrayList<HashMap<String,Object>> list;
+  int interval = 1000;
 
   protected ScanCallback mScanCallback = new ScanCallback() {
     @Override
@@ -95,78 +108,41 @@ public class MainActivity extends Fragment implements View.OnClickListener {
     final ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.activity_main, container, false);
     initialize(rootview);
 
+    checkLocation = Executors.newSingleThreadScheduledExecutor();
+    checkLocation.scheduleAtFixedRate(new Runnable() {
+      @Override
+      public void run() {
+        Log.v("test", "asd");
+        if (ContextCompat.checkSelfPermission(rootview.getContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+          requestBluetoothScan();
+          checkLocation.shutdown();
+        }
+      }
+    }, 0, 4000, TimeUnit.MILLISECONDS);
 
+    Executors.newScheduledThreadPool(1);
+    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    if (mBluetoothAdapter != null) {
+      if (!mBluetoothAdapter.isEnabled()) {
+        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), BluetoothRequestCode);
+      }
+    }
     // MQTT SERVICE
 //    mqtt_service.setStatusTextView(mqttStatusTV);
 //    mqtt_service.startConnect();
 
     // Bluetooth Get Adapter
 
-    if (ContextCompat.checkSelfPermission(rootview.getContext(),
-            Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
-      if (!ActivityCompat.shouldShowRequestPermissionRationale((Activity) rootview.getContext(),
-              Manifest.permission.ACCESS_FINE_LOCATION)) {
-        ActivityCompat.requestPermissions((Activity) rootview.getContext(),
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                BluetoothRequestCode);
-      } else {
-       requestLocationPermission();
-      }
-    } else {
-      requestBluetoothScan();
-    }
 
 
     return rootview;
   }
 
-  @Override
-  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    switch(requestCode) {
-      case BluetoothRequestCode:
-        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-          requestBluetoothScan();
-        else
-          requestLocationPermission();
-        break;
-    }
-  }
 
-  void requestLocationPermission() {
-    final View view = _instance;
-    AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-    builder.setTitle("Request Location Permission");
-    builder.setMessage("Please allow location permission or the apps will be quit");
-    builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialogInterface, int i) {
-        ActivityCompat.requestPermissions((Activity) view.getContext(),
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                BluetoothRequestCode);
-      }
-    });
-    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-      @Override
-      public void onClick(DialogInterface dialogInterface, int i) {
-        System.exit(0);
-      }
-    });
-    builder.create().show();
-  }
 
   void requestBluetoothScan() {
-
-    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-    if (mBluetoothAdapter != null){
-      if(!mBluetoothAdapter.isEnabled()) {
-        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), BluetoothRequestCode);
-      } else {
-        requestBluetoothScan();
-      }
-    }
     mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
     mBluetoothLeScanner.startScan(mScanCallback);
   }
@@ -283,6 +259,10 @@ public class MainActivity extends Fragment implements View.OnClickListener {
     }
   }
 
+  @Override
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
+      Log.v("result", "qwe");
+  }
 
   // OLD
 

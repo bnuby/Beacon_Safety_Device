@@ -1,14 +1,10 @@
 package com.example.gibson.myapplication;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -18,6 +14,7 @@ import android.widget.Toast;
 
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
+import com.example.gibson.myapplication.Services.RequestService;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -38,7 +35,14 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
   EditText mqtt_topic;
   EditText mqtt_username;
   EditText mqtt_password;
+
+  // User Login Configure
+  EditText usernameET;
+  EditText passwordET;
   Button loginBtn;
+  Button registerBtn;
+
+  Button mqtt_loginBtn;
 
 //  @Override
 //  protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -62,11 +66,25 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
   }
 
   void init() {
+
+    // Setting mqtt
     mqtt_status = _instance.findViewById(R.id.mqtt_status);
     mqtt_host = _instance.findViewById(R.id.mqtt_host);
     mqtt_topic = _instance.findViewById(R.id.mqtt_topic);
     mqtt_username = _instance.findViewById(R.id.mqtt_username);
     mqtt_password = _instance.findViewById(R.id.mqtt_password);
+    mqtt_loginBtn = _instance.findViewById(R.id.mqtt_login);
+    mqtt_loginBtn.setOnClickListener(this);
+
+
+    // Setting user
+    usernameET = _instance.findViewById(R.id.usernameET);
+    passwordET = _instance.findViewById(R.id.passwordET);
+    loginBtn = _instance.findViewById(R.id.loginBtn);
+    loginBtn.setOnClickListener(this);
+    registerBtn = _instance.findViewById(R.id.registerBtn);
+    registerBtn.setOnClickListener(this);
+
     JSONArray array = getDatabaseService().getMqtt();
     if(array.length() != 0) {
       try {
@@ -80,12 +98,10 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
       }
     }
 
-    loginBtn = _instance.findViewById(R.id.mqtt_login);
-    loginBtn.setOnClickListener(this);
 
     if(mqtt_service!=null) {
       mqtt_service.setStatusTextView(mqtt_status);
-      loginBtn.setText(R.string.cancel);
+      mqtt_loginBtn.setText(R.string.cancel);
     }
   }
 
@@ -125,6 +141,20 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
           btn.setText(getResources().getString(R.string.login));
           mqtt_service.cancelConnect();
         }
+        break;
+
+      case R.id.loginBtn:
+        String username = usernameET.getText().toString();
+        String password = passwordET.getText().toString();
+        RequestService.loginRequest(username, password);
+        break;
+
+      case R.id.registerBtn:
+
+        Intent intent = new Intent(getContext(), RegisterActivity.class);
+        startActivity(intent);
+        break;
+
     }
   }
 }
