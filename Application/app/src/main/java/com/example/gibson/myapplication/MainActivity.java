@@ -1,430 +1,254 @@
 package com.example.gibson.myapplication;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
-import android.app.job.JobScheduler;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.le.BluetoothLeScanner;
-import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanRecord;
-import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Cache;
+import com.android.volley.Network;
 import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.BasicNetwork;
+import com.android.volley.toolbox.DiskBasedCache;
+import com.android.volley.toolbox.HurlStack;
+import com.example.gibson.myapplication.Services.DatabaseService;
+import com.example.gibson.myapplication.Services.MQTT_SERVICE;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.nio.ByteBuffer;
-import java.security.Permission;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import static com.example.gibson.myapplication.MainPageActivity.BluetoothRequestCode;
 
-import static com.example.gibson.myapplication.MainViewPager.getDatabaseService;
-import static com.example.gibson.myapplication.MainViewPager.mqtt_service;
+/**
+ * Created by gibson on 20/03/2018.
+ */
 
+public class MainActivity extends AppCompatActivity {
 
-public class MainActivity extends Fragment implements View.OnClickListener {
+  private final int NUM_PAGES = 4;
+  public static MQTT_SERVICE mqtt_service;
+  private static DatabaseService databaseService;
+  private ViewPager viewPager;
+  private ViewPagerAdapter pagerAdapter;
+  private TabLayout tabLayout;
+  public static RequestQueue requestQueue;
+  private static Context mContext;
 
-  private View _instance;
-  public static final int BluetoothRequestCode = 2;
-  public BluetoothAdapter mBluetoothAdapter;
-  public BluetoothLeScanner mBluetoothLeScanner;
-  ScheduledExecutorService checkLocation;
-
-//  private MQTT_SERVICE mqtt_service;
-
-//  TextView mqttStatusTV;
-  ListView listView;
-  JSONArray beaconArray;
-  ArrayList<HashMap<String,Object>> list;
-  int interval = 1000;
-
-  protected ScanCallback mScanCallback = new ScanCallback() {
-    @Override
-    public void onScanResult(int callbackType, ScanResult result) {
-      ScanRecord mScanRecord = result.getScanRecord();
-      byte[] manufacturerData = mScanRecord.getManufacturerSpecificData(224);
-      int mRssi = result.getRssi();
-      int txPower = result.getScanRecord().getTxPowerLevel();
-//      if(result.getDevice().getAddress().equalsIgnoreCase(getMacAddress(macET))) {
-//        statusTV.setText("yes");
-//        rssiTV.setText(String.valueOf(mRssi));
-//        txPowerTV.setText(String.valueOf(txPower));
-//        accuracyTV.setText(String.valueOf(calculateAccuracy(txPower, mRssi)));
-//        distanceTV.setText(String.valueOf(calculateDistance(txPower, mRssi)));
-//      }
-      for(HashMap<String, Object> i : list) {
-        if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
-          i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
-        }
-      }
-      listView.invalidateViews();
-
-    }
-  };
-
-  public static byte[] getIdAsByte(java.util.UUID uuid) {
-    ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
-    bb.putLong(uuid.getMostSignificantBits());
-    bb.putLong(uuid.getLeastSignificantBits());
-    return bb.array();
+  public static DatabaseService getDatabaseService() {
+    return databaseService;
   }
 
-  @Nullable
   @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
-    final ViewGroup rootview = (ViewGroup) inflater.inflate(R.layout.activity_main, container, false);
-    initialize(rootview);
+  protected void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_viewpager);
+    databaseService = new DatabaseService(this);
 
-    checkLocation = Executors.newSingleThreadScheduledExecutor();
-    checkLocation.scheduleAtFixedRate(new Runnable() {
-      @Override
-      public void run() {
-        Log.v("test", "asd");
-        if (ContextCompat.checkSelfPermission(rootview.getContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-          requestBluetoothScan();
-          checkLocation.shutdown();
-        }
-      }
-    }, 0, 4000, TimeUnit.MILLISECONDS);
-
-    Executors.newScheduledThreadPool(1);
-    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    if (mBluetoothAdapter != null) {
-      if (!mBluetoothAdapter.isEnabled()) {
-        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), BluetoothRequestCode);
+    if (ContextCompat.checkSelfPermission(this,
+            Manifest.permission.ACCESS_COARSE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED) {
+        Log.v("request", "permission");
+      // Should we show an explanation?
+      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+              Manifest.permission.ACCESS_COARSE_LOCATION)) {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
       }
     }
-    // MQTT SERVICE
-//    mqtt_service.setStatusTextView(mqttStatusTV);
-//    mqtt_service.startConnect();
 
-    // Bluetooth Get Adapter
-
-
-
-    return rootview;
+    init();
   }
 
-
-
-  void requestBluetoothScan() {
-    mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-    mBluetoothLeScanner.startScan(mScanCallback);
-  }
-
-  void initialize(ViewGroup group) {
-//    mqttStatusTV = group.findViewById(R.id.mqttStatus);
-//    publishET = group.findViewById(R.id.publishET);
-//    scanBtn = group.findViewById(R.id.scanBtn);
-//    sendBtn = group.findViewById(R.id.publishBtn);
-//    scanBtn.setOnClickListener(this);
-//    sendBtn.setOnClickListener(this);
-
-    _instance = group.getRootView();
-
-
-    // List View
-    listView = group.findViewById(R.id.listView);
-
-    beaconArray = MainViewPager.getDatabaseService().getBeacons();
-    list = new ArrayList<>();
-
-    for (int i = 0; i < beaconArray.length(); i++) {
+  public void init() {
+    mContext = this;
+    JSONArray mqttArray = getDatabaseService().getMqtt();
+    Log.v("mqttarray", mqttArray.toString());
+    if(mqttArray != null && mqttArray.length() != 0) {
       try {
-        JSONObject obj = beaconArray.getJSONObject(i);
-        HashMap<String, Object> dict = new HashMap();
-        dict.put("name",obj.getString("name"));
-        dict.put("mac",obj.getString("mac"));
-        dict.put("distance",0);
+        JSONObject mqttObj = mqttArray.getJSONObject(0);
+        String host = "tcp://" + mqttObj.getString("host");
+        String topic = mqttObj.getString("topic");
+        String username = mqttObj.getString("username");
+        String password = mqttObj.getString("password");
+        Log.v("host", host);
 
-        list.add(dict);
+        mqtt_service = new MQTT_SERVICE(this, host, topic, username, password);
+        mqtt_service.startConnect();
+
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
-    SimpleAdapter adapter = new SimpleAdapter(
-            _instance.getContext(),
-            list,
-            R.layout.beacon_list_row,
-            new String[]{"name", "distance"},
-            new int[] {R.id.beacon_nameTV, R.id.beacon_distanceTV}
-    );
-    listView.setAdapter(adapter);
+
+    tabLayout = findViewById(R.id.tabLayout);
+    viewPager = findViewById(R.id.pager);
+    pagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+    viewPager.setAdapter(pagerAdapter);
+    tabLayout.setupWithViewPager(viewPager);
+
+    // Iterate over all tabs and set the custom view
+    for(int i = 0; i < NUM_PAGES; i++) {
+      TabLayout.Tab tab = tabLayout.getTabAt(i);
+      tab.setCustomView(pagerAdapter.getTabView(i));
+    }
+
+    // Initial Cache
+    Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
+
+    // Set up the network to use HttpURLConnection as the HTTP client.
+    Network network = new BasicNetwork(new HurlStack());
+
+    requestQueue = new RequestQueue(cache, network);
+    requestQueue.start();
+
   }
 
-
-  public static String getMacAddress(EditText[] mac) {
-    StringBuffer macAddress = new StringBuffer();
-    for(int i = 0; i < mac.length - 1; i ++) {
-      macAddress.append(mac[i].getText()+":");
-    }
-    macAddress.append(mac[5].getText());
-    return macAddress.toString();
-  }
-
-  void checkValue(String name, String text) {
-    if (text != null) {
-      Log.v(name, text);
-    } else {
-      Log.v(name, "none");
-    }
-  }
-
-  public double calculateAccuracy(int txPower, double rssi) {
-    if (rssi == 0) {
-      return -1.0; // if we cannot determine accuracy, return -1.
-    }
-    double ratio = rssi * 1.0 / txPower;
-    if (ratio < 1.0) {
-      return Math.pow(ratio, 10);
-    } else {
-      double accuracy = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-      return accuracy;
-    }
-  }
-
-  public double calculateDistance(int txPower, double rssi) {
-    Log.v("TXPOWER", String.valueOf(txPower));
-    Log.v("RSSI", String.valueOf(rssi));
-    double iRssi = Math.abs(rssi);
-//    double power = (iRssi - 59) / (15 * 2.0);
-//    return Math.pow(10, power);
-    return (1.12900922 * Math.pow(10, -13) * Math.pow(iRssi, 7.068735405));
-  }
-
-  private String getDistance(Double accuracy) {
-    if (accuracy == -1.0) {
-      return "Unknown";
-    } else if (accuracy < 1) {
-      return "Immediate";
-    } else if (accuracy < 3) {
-      return "Near";
-    } else {
-      return "Far";
-    }
+  public void customTabIcons() {
+//    getLayoutInflater().inflate()
   }
 
   @Override
-  public void onClick(View view) {
-    switch (view.getId()) {
-//      case R.id.scanBtn:
-//        Button scanBtn = _instance.findViewById(R.id.scanBtn);
-//        if(scanBtn.getText().equals("Scan")) {
-//          Log.v("scanner", "Button");
-//          mBluetoothLeScanner.startScan(mScanCallback);
-//          scanBtn.setText("Stopped Scan");
-//        } else {
-//          mBluetoothLeScanner.stopScan(mScanCallback);
-//          scanBtn.setText("Scan");
-//        }
-//        break;
-//      case R.id.publishBtn:
-//        mqtt_service.publishMessage("test", publishET.getText().toString());
-//        break;
-    }
+  public boolean onCreateOptionsMenu(Menu menu) {
+    getMenuInflater().inflate(R.menu.toolbar_main, menu);
+    return super.onCreateOptionsMenu(menu);
+  }
+
+
+  void requestLocationPermission() {
+    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+    builder.setTitle("Request Location Permission");
+    builder.setMessage("Please allow location permission or the apps will be quit");
+    builder.setPositiveButton("Accept", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        ActivityCompat.requestPermissions(MainActivity.this,
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
+      }
+    });
+    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+      @Override
+      public void onClick(DialogInterface dialogInterface, int i) {
+        System.exit(0);
+      }
+    });
+    AlertDialog dialog = builder.create();
+    dialog.setCancelable(false);
+    dialog.show();
   }
 
   @Override
-  public void onActivityResult(int requestCode, int resultCode, Intent data) {
-      Log.v("result", "qwe");
+  public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    switch(requestCode) {
+      case BluetoothRequestCode:
+        if(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        } else {
+          requestLocationPermission();
+        }
+        break;
+    }
+
   }
 
-  // OLD
+  @Override
+  public boolean onOptionsItemSelected(MenuItem item) {
+    Intent intent;
+    switch (item.getItemId()) {
+      case R.id.action_beacon:
+        intent = new Intent(this, BeaconActivity.class);
+        startActivity(intent);
+        break;
 
-//  @Override
-//  protected void onCreate(Bundle savedInstanceState) {
-//    super.onCreate(savedInstanceState);
-//
-//    setContentView(R.layout.activity_main);
-//    initialize();
-//    mqtt_service = new MQTT_SERVICE(this, host, myTopic, username, password);
-//    mqtt_service.setStatusTextView(mqttStatusTV);
-//    mqtt_service.startConnect();
-//            mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-//    if (mBluetoothAdapter == null || !mBluetoothAdapter.isEnabled()) {
-//      startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), 2);
-//    }
-//    mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-//  }
+      case R.id.action_setting:
+        intent = new Intent(this, SettingActivity.class);
+        startActivity(intent);
+        break;
+    }
 
-//  void initialize() {
-//    statusTV = findViewById(R.id.statusTV);
-//    rssiTV = findViewById(R.id.rssiTV);
-//    mqttStatusTV = findViewById(R.id.mqttStatus);
-//    distanceET = findViewById(R.id.distanceET);
-//    accuracyTV = findViewById(R.id.accuracyTV);
-//    txPowerTV = findViewById(R.id.txPowerTV);
-//    publishET = findViewById(R.id.publishET);
-//    macET = new EditText[6];
-//    macET[0] = findViewById(R.id.macET1);
-//    macET[1] = findViewById(R.id.macET2);
-//    macET[2] = findViewById(R.id.macET3);
-//    macET[3] = findViewById(R.id.macET4);
-//    macET[4] = findViewById(R.id.macET5);
-//    macET[5] = findViewById(R.id.macET6);
-//
-//    for(EditText i : macET) {
-//      i.setOnKeyListener(this);
-//      i.addTextChangedListener(this);
-//    }
-//
-//  }
+    return super.onOptionsItemSelected(item);
+  }
 
-//  String getMacAddress(EditText[] mac) {
-//    StringBuffer macAddress = new StringBuffer();
-//    for(int i = 0; i < mac.length - 1; i ++) {
-//      macAddress.append(mac[i].getText()+":");
+  public static void sendToast(String msg) {
+    Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+  }
+
+  public static void sendBroadcastMessage(Intent intent) {
+    mContext.sendBroadcast(intent);
+  }
+
+
+  // Custom View Pager Adapter
+  private class ViewPagerAdapter extends FragmentStatePagerAdapter {
+
+    String[] title = new String[]{
+            getResources().getString(R.string.title_beacon) ,
+            getResources().getString(R.string.title_contact),
+            getResources().getString(R.string.title_manage_beacon),
+            getResources().getString(R.string.title_setting)};
+
+    public ViewPagerAdapter(FragmentManager fm) {
+      super(fm);
+    }
+
+    @Override
+    public Fragment getItem(int position) {
+      switch (position) {
+        case 0:
+          return new MainPageActivity();
+        case 1:
+          return new ContactActivity();
+        case 2:
+          return new BeaconActivity();
+        case 3:
+          return new SettingActivity();
+      }
+      return null;
+    }
+//
+//    @Override
+//    public CharSequence getPageTitle(int position) {
+//      return title[position];
 //    }
-//    macAddress.append(mac[5].getText());
-//
-//    return macAddress.toString();
-//  }
-//
-//  void checkValue(String name, String text) {
-//    if (text != null) {
-//      Log.v(name, text);
-//    } else {
-//      Log.v(name, "none");
-//    }
-//  }
-//
-//  public double calculateAccuracy(int txPower, double rssi) {
-//    if (rssi == 0) {
-//      return -1.0; // if we cannot determine accuracy, return -1.
-//    }
-//    double ratio = rssi * 1.0 / txPower;
-//    if (ratio < 1.0) {
-//      return Math.pow(ratio, 10);
-//    } else {
-//      double accuracy = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-//      return accuracy;
-//    }
-//  }
-//
-//  public double calculateDistance(int txPower, double rssi) {
-//    double iRssi = Math.abs(rssi);
-//    double power = (iRssi - 59) / (10 * 2.0);
-//    return Math.pow(10, power);
-//  }
-//
-//  private String getDistance(Double accuracy) {
-//    if (accuracy == -1.0) {
-//      return "Unknown";
-//    } else if (accuracy < 1) {
-//      return "Immediate";
-//    } else if (accuracy < 3) {
-//      return "Near";
-//    } else {
-//      return "Far";
-//    }
-//  }
-//
-//  @Override
-//  public void onClick(View view) {
-//    switch (view.getId()) {
-//      case R.id.scanBtn:
-//        Button scanBtn = findViewById(R.id.scanBtn);
-//        if(scanBtn.getText().equals("Scan")) {
-//          Log.v("scanner", "Button");
-//          mBluetoothLeScanner.startScan(mScanCallback);
-//          scanBtn.setText("Stopped Scan");
-//        } else {
-//          statusTV.setText("no");
-//          rssiTV.setText("");
-//          txPowerTV.setText("");
-//          accuracyTV.setText("");
-//          distanceET.setText("");
-//          mBluetoothLeScanner.stopScan(mScanCallback);
-//          scanBtn.setText("Scan");
-//        }
-//        break;
-//      case R.id.publishBtn:
-//        mqtt_service.publishMessage("test", publishET.getText().toString());
-//        break;
-//    }
-//  }
-//
-//  @SuppressLint("ResourceType")
-//  @Override
-//  public boolean onKey(View view, int i, KeyEvent keyEvent) {
-//
-//    switch(view.getId()) {
-//      case R.id.macET2:
-//      case R.id.macET3:
-//      case R.id.macET4:
-//      case R.id.macET5:
-//      case R.id.macET6:
-//        EditText editText = (EditText) view;
-//        if(editText.getText().length() == 0 && i == keyEvent.KEYCODE_DEL)
-//          findViewById(view.getId() - 1).requestFocus();
-//    }
-//    return false;
-//  }
-//
-//  @Override
-//  public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//  }
-//
-//  @Override
-//  public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-//
-//  }
-//
-//  @Override
-//  public void afterTextChanged(Editable editable) {
-//    Log.v("editable text length", editable.length() + "");
-//    if(editable.length() >= 2) {
-//      if(macET[0].hasFocus()) {
-//        macET[1].requestFocus();
-//      } else if(macET[1].hasFocus()) {
-//        macET[2].requestFocus();
-//      } else if(macET[2].hasFocus()) {
-//        macET[3].requestFocus();
-//      } else if(macET[3].hasFocus()) {
-//        macET[4].requestFocus();
-//      } else if(macET[4].hasFocus()) {
-//        macET[5].requestFocus();
-//      } else if(macET[5].hasFocus()) {
-//        View view = this.getCurrentFocus();
-//        InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-//        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
-//      }
-//    }
-//  }
+
+    public View getTabView(int position) {
+      View v = getLayoutInflater().inflate(R.layout.custom_tab, null);
+      TextView tab_item = v.findViewById(R.id.tab_item);
+      tab_item.setText(title[position]);
+      tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.tab_icon);
+
+      return v;
+    }
+
+
+
+    @Override
+    public int getCount() {
+      return NUM_PAGES;
+    }
+
+
+  }
+
 }

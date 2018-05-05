@@ -20,8 +20,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.gibson.myapplication.MainViewPager.getDatabaseService;
-import static com.example.gibson.myapplication.MainViewPager.mqtt_service;
+import static com.example.gibson.myapplication.MainActivity.getDatabaseService;
+import static com.example.gibson.myapplication.MainActivity.mqtt_service;
 
 /**
  * Created by gibson on 21/03/2018.
@@ -120,7 +120,7 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
       case R.id.mqtt_login:
         Button btn = (Button) view;
         if(btn.getText() == getResources().getString(R.string.login)) {
-          DatabaseService service = MainViewPager.getDatabaseService();
+          DatabaseService service = MainActivity.getDatabaseService();
           service.deleteMqtt();
           String host = "tcp://" + mqtt_host.getText().toString();
           String topic = mqtt_topic.getText().toString();

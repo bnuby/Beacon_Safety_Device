@@ -7,7 +7,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.gibson.myapplication.MainViewPager;
+import com.example.gibson.myapplication.MainActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -41,24 +41,24 @@ public class RequestService {
                   Intent intent = new Intent("Login");
                   intent.putExtra("status", true);
 
-                  MainViewPager.sendBroadcastMessage(intent);
+                  MainActivity.sendBroadcastMessage(intent);
                 }
               },
               new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                   Log.v("User Login", "Request Fail\n" + error.getMessage());
-                MainViewPager.sendToast("error");
+                MainActivity.sendToast("error");
                 }
               });
-      MainViewPager.requestQueue.add(request);
+      MainActivity.requestQueue.add(request);
 
     } catch (JSONException e) {
-      MainViewPager.sendToast("Fail to Send, Please Contact for assistance");
+      MainActivity.sendToast("Fail to Send, Please Contact for assistance");
       e.printStackTrace();
     }
 
-    MainViewPager.sendToast("Sending Login Request");
+    MainActivity.sendToast("Sending Login Request");
 
     return true;
   }
@@ -82,7 +82,7 @@ public class RequestService {
                   Intent intent = new Intent("Register");
                   intent.putExtra("status", response.getBoolean("status"));
 
-                  MainViewPager.sendBroadcastMessage(intent);
+                  MainActivity.sendBroadcastMessage(intent);
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
@@ -92,13 +92,13 @@ public class RequestService {
               @Override
               public void onErrorResponse(VolleyError error) {
                 Log.v("Register", error.toString());
-                MainViewPager.sendToast("Register Failure!\nPlease Try Again Later!");
+                MainActivity.sendToast("Register Failure!\nPlease Try Again Later!");
               }
             });
 
 
-    MainViewPager.requestQueue.add(request);
-    MainViewPager.sendToast("Sending Register Request");
+    MainActivity.requestQueue.add(request);
+    MainActivity.sendToast("Sending Register Request");
 
 
     return true;

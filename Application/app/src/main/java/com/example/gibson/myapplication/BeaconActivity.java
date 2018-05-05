@@ -67,7 +67,7 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
   private void init(View view) {
     macET = new EditText[6];
     beacon_listView = view.findViewById(R.id.beacon_table_list);
-    beaconArray = MainViewPager.getDatabaseService().getBeacons();
+    beaconArray = MainActivity.getDatabaseService().getBeacons();
     addBtn = view.findViewById(R.id.beacon_addBtn);
     addBtn.setOnClickListener(this);
     BeaconTableAdapter adapter = new BeaconTableAdapter(_instance.getContext());
@@ -134,14 +134,14 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
 
       case R.id.beacon_dialog_addBtn:
           String name = nameET.getText().toString();
-          mac = MainActivity.getMacAddress(macET);
+          mac = MainPageActivity.getMacAddress(macET);
           String distanceText = distanceET.getText().toString();
           double distance = distanceText.equals("") ? 0: Double.parseDouble(distanceText.toString());
           if(mac.length() < 17) {
             Toast.makeText(_instance.getContext(), "Mac Address is too short!", Toast.LENGTH_SHORT).show();
             break;
           }
-          long status = MainViewPager.getDatabaseService().insertBeacon(name, mac, distance);
+          long status = MainActivity.getDatabaseService().insertBeacon(name, mac, distance);
           if(status != -1)
             try {
               beaconArray.put(new JSONObject(String.format("{'mac':'%s', 'name':'%s', 'alert_distance':%f}", mac, name, distance)));
@@ -165,13 +165,13 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
         try {
           JSONObject object = beaconArray.getJSONObject((Integer) view.getTag());
           name = nameET.getText().toString();
-          mac = MainActivity.getMacAddress(macET);
+          mac = MainPageActivity.getMacAddress(macET);
           distance = Double.parseDouble(distanceET.getText().toString());
           Log.v("name", name);
           Log.v("mac", mac);
           Log.v("distance", distance + "");
 
-          MainViewPager.getDatabaseService().updateBeacon(object.getString("mac"),mac, name, distance);
+          MainActivity.getDatabaseService().updateBeacon(object.getString("mac"),mac, name, distance);
           object.put("mac", mac);
           object.put("name", name);
           object.put("alert_distance", distance);
@@ -216,7 +216,7 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
         try {
           int i = Integer.parseInt(view.getTag()+"");
           mac = beaconArray.getJSONObject(i).getString("mac");
-          status = MainViewPager.getDatabaseService().deleteBeacon(mac);
+          status = MainActivity.getDatabaseService().deleteBeacon(mac);
           if(status == 1) {
             beaconArray.remove(i);
             beacon_listView.invalidateViews();
