@@ -26,6 +26,9 @@ allprojects {
     repositories {
         google()
         jcenter()
+        flatDir {
+            dirs 'libs'
+        }
     }
 }
 
@@ -33,7 +36,7 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
-ext {
-    // QuickBlox SDK version
-    qbSdkVersion = '3.7.0'
-}
+//ext {
+//    // QuickBlox SDK version
+//    qbSdkVersion = '3.7.0'
+//}
