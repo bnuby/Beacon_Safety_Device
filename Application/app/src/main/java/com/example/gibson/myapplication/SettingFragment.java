@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
-import com.example.gibson.myapplication.Services.RequestService;
+import com.example.gibson.myapplication.Services.RequestManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,7 +27,7 @@ import static com.example.gibson.myapplication.MainActivity.mqtt_service;
  * Created by gibson on 21/03/2018.
  */
 
-public class SettingActivity extends Fragment implements View.OnClickListener {
+public class SettingFragment extends Fragment implements View.OnClickListener {
 
   private View _instance;
   TextView mqtt_status;
@@ -146,7 +146,7 @@ public class SettingActivity extends Fragment implements View.OnClickListener {
       case R.id.loginBtn:
         String username = usernameET.getText().toString();
         String password = passwordET.getText().toString();
-        RequestService.loginRequest(username, password);
+        RequestManager.loginRequest(username, password);
         break;
 
       case R.id.registerBtn:

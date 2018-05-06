@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.example.gibson.myapplication.Services.RequestService;
+import com.example.gibson.myapplication.Services.RequestManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,7 +44,7 @@ public class RegisterActivity extends AppCompatActivity {
           object.put("username", usernameET.getText().toString());
           object.put("password", passwordET.getText().toString());
           object.put("email", emailET.getText().toString());
-          RequestService.registerRequest(object);
+          RequestManager.registerRequest(object);
         } catch (JSONException e) {
           e.printStackTrace();
         }

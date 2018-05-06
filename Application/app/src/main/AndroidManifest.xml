@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
 
     <!-- Sinch -->
+    <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
@@ -48,7 +49,7 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Calling"></activity>
+        <activity android:name=".CallingActivity"></activity>
     </application>
 
 </manifest>

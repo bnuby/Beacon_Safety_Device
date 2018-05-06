@@ -1,10 +1,7 @@
 package com.example.gibson.myapplication;
 
-import android.Manifest;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.media.AudioManager;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,7 +21,7 @@ import com.sinch.android.rtc.calling.CallListener;
 
 import java.util.List;
 
-public class Calling extends AppCompatActivity {
+public class CallingActivity extends AppCompatActivity {
 
     private static final String APP_KEY = "dd3452d3-6c1a-4f37-8deb-1c9878eb6831";
     private static final String APP_SECRET = "lxj2OtDCnE2eA3LgY7ur7g==";
@@ -36,7 +33,7 @@ public class Calling extends AppCompatActivity {
     private Button button,buttonLogout;
     private String callerId;
     private String recipientId;
-    private static final String TAG = "Calling";
+    private static final String TAG = "CallingActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +62,7 @@ public class Calling extends AppCompatActivity {
         button = (Button) findViewById(R.id.testbutton);
         callState = (TextView) findViewById(R.id.testtextView);
         buttonLogout =findViewById(R.id.testlogout);
+
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,7 +115,7 @@ public class Calling extends AppCompatActivity {
         @Override
         public void onIncomingCall(CallClient callClient, Call incomingCall) {
             call = incomingCall;
-            Toast.makeText(Calling.this, "incoming call", Toast.LENGTH_SHORT).show();
+            Toast.makeText(CallingActivity.this, "incoming call", Toast.LENGTH_SHORT).show();
             call.answer();
             call.addCallListener(new SinchCallListener());
             button.setText("Hang Up");

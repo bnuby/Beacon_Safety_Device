@@ -9,8 +9,6 @@ import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONStringer;
 
 /**
  * Created by gibson on 22/03/2018.
@@ -19,12 +17,12 @@ import org.json.JSONStringer;
 public class DatabaseService extends SQLiteOpenHelper {
 
   public final static String NAME = "Beacon";
-  public final static int version = 1;
+  public final static int VERSION = 1;
 
   private DatabaseService _instance;
 
   public DatabaseService(Context context) {
-    super(context, NAME, null, version);
+    super(context, NAME, null, VERSION);
     _instance = this;
 
   }
@@ -32,7 +30,7 @@ public class DatabaseService extends SQLiteOpenHelper {
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
     String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
-    String user = "Create Table User (username TEXT, password TEXT, name TEXT)";
+    String user = "Create Table User (username TEXT, password TEXT, name TEXT, email TEXT, callerID TEXT)";
     String contact = "Create Table Contact (name TEXT, id TEXT, phone_number INTEGER)";
     String mqtt = "Create Table Mqtt (host TEXT, topic TEXT, username TEXT, password TEXT)";
 

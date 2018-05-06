@@ -8,11 +8,14 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.gibson.myapplication.MainActivity;
+import com.example.gibson.myapplication.Model.Beacon;
+import com.example.gibson.myapplication.Model.Contact;
+import com.example.gibson.myapplication.Model.User;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class RequestService {
+public class RequestManager {
   static String host = "http://10.21.22.168:5000/";
 
   public static boolean loginRequest(String username, String password) {
@@ -100,6 +103,45 @@ public class RequestService {
     MainActivity.requestQueue.add(request);
     MainActivity.sendToast("Sending Register Request");
 
+    return true;
+  }
+
+  public static boolean getBeaconData(User user) {
+    if(MainActivity.isLogin) {
+
+      return true;
+    }
+    return false;
+  }
+
+  public static boolean insertBeaconData(User user, Beacon contact) {
+
+    return true;
+  }
+
+  public static boolean deleteBeaconData(User user, Beacon contact) {
+
+    return true;
+  }
+
+
+  public static boolean registerContact(User user, Contact contact) {
+
+    return true;
+  }
+
+  public static boolean getContact(User user, Contact contact) {
+
+    return true;
+  }
+
+  public static boolean deleteContact(User user, Contact contact) {
+
+    return true;
+  }
+
+
+  public static boolean armAlarm(User user) {
 
     return true;
   }

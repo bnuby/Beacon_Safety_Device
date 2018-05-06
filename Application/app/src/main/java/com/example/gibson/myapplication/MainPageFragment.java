@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
@@ -32,7 +31,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
-public class MainPageActivity extends Fragment implements View.OnClickListener {
+public class MainPageFragment extends Fragment implements View.OnClickListener {
 
   private View _instance;
   public static final int BluetoothRequestCode = 2;
@@ -45,7 +44,7 @@ public class MainPageActivity extends Fragment implements View.OnClickListener {
 //  TextView mqttStatusTV;
   ListView listView;
   JSONArray beaconArray;
-  ArrayList<HashMap<String,Object>> list;
+  ArrayList<HashMap<String,Object>> beaconList;
   int interval = 1000;
 
   protected ScanCallback mScanCallback = new ScanCallback() {
@@ -62,7 +61,7 @@ public class MainPageActivity extends Fragment implements View.OnClickListener {
 //        accuracyTV.setText(String.valueOf(calculateAccuracy(txPower, mRssi)));
 //        distanceTV.setText(String.valueOf(calculateDistance(txPower, mRssi)));
 //      }
-      for(HashMap<String, Object> i : list) {
+      for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
         }
@@ -139,7 +138,7 @@ public class MainPageActivity extends Fragment implements View.OnClickListener {
     listView = group.findViewById(R.id.listView);
 
     beaconArray = MainActivity.getDatabaseService().getBeacons();
-    list = new ArrayList<>();
+    beaconList = new ArrayList<>();
 
     for (int i = 0; i < beaconArray.length(); i++) {
       try {
@@ -149,29 +148,19 @@ public class MainPageActivity extends Fragment implements View.OnClickListener {
         dict.put("mac",obj.getString("mac"));
         dict.put("distance",0);
 
-        list.add(dict);
+        beaconList.add(dict);
       } catch (JSONException e) {
         e.printStackTrace();
       }
     }
     SimpleAdapter adapter = new SimpleAdapter(
             _instance.getContext(),
-            list,
+            beaconList,
             R.layout.beacon_list_row,
             new String[]{"name", "distance"},
             new int[] {R.id.beacon_nameTV, R.id.beacon_distanceTV}
     );
     listView.setAdapter(adapter);
-  }
-
-
-  public static String getMacAddress(EditText[] mac) {
-    StringBuffer macAddress = new StringBuffer();
-    for(int i = 0; i < mac.length - 1; i ++) {
-      macAddress.append(mac[i].getText()+":");
-    }
-    macAddress.append(mac[5].getText());
-    return macAddress.toString();
   }
 
   void checkValue(String name, String text) {

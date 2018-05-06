@@ -33,7 +33,7 @@ import org.json.JSONObject;
  * Created by gibson on 21/03/2018.
  */
 
-public class BeaconActivity extends Fragment implements View.OnClickListener, TextWatcher, View.OnKeyListener{
+public class BeaconFragment extends Fragment implements View.OnClickListener, TextWatcher, View.OnKeyListener{
 
   private ListView beacon_listView;
   private JSONArray beaconArray;
@@ -44,17 +44,6 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
   EditText distanceET;
   View dialog_layout;
   Button addBtn;
-
-//  @Override
-//  protected void onCreate(@Nullable Bundle savedInstanceState) {
-//    super.onCreate(savedInstanceState);
-//    setContentView(R.layout.activity_beacon);
-//    Toolbar toolbar = findViewById(R.id.toolbar_beacon);
-//
-//    setSupportActionBar(toolbar);
-//    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-//    init();
-//  }
 
   @Nullable
   @Override
@@ -134,7 +123,7 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
 
       case R.id.beacon_dialog_addBtn:
           String name = nameET.getText().toString();
-          mac = MainPageActivity.getMacAddress(macET);
+          mac = getMacAddress(macET);
           String distanceText = distanceET.getText().toString();
           double distance = distanceText.equals("") ? 0: Double.parseDouble(distanceText.toString());
           if(mac.length() < 17) {
@@ -165,7 +154,7 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
         try {
           JSONObject object = beaconArray.getJSONObject((Integer) view.getTag());
           name = nameET.getText().toString();
-          mac = MainPageActivity.getMacAddress(macET);
+          mac = getMacAddress(macET);
           distance = Double.parseDouble(distanceET.getText().toString());
           Log.v("name", name);
           Log.v("mac", mac);
@@ -228,6 +217,15 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
         break;
       default:
     }
+  }
+
+  public static String getMacAddress(EditText[] mac) {
+    StringBuffer macAddress = new StringBuffer();
+    for(int i = 0; i < mac.length - 1; i ++) {
+      macAddress.append(mac[i].getText()+":");
+    }
+    macAddress.append(mac[5].getText());
+    return macAddress.toString();
   }
 
   @SuppressLint("ResourceType")
@@ -315,8 +313,8 @@ public class BeaconActivity extends Fragment implements View.OnClickListener, Te
       Button editBtn = view1.findViewById(R.id.beacon_editBtn);
       deleteBtn.setTag(i);
       editBtn.setTag(i);
-      editBtn.setOnClickListener(BeaconActivity.this);
-      deleteBtn.setOnClickListener(BeaconActivity.this);
+      editBtn.setOnClickListener(BeaconFragment.this);
+      deleteBtn.setOnClickListener(BeaconFragment.this);
 
       try {
         final JSONObject currentObj = beaconArray.getJSONObject(i);

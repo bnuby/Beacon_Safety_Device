@@ -37,7 +37,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static com.example.gibson.myapplication.MainPageActivity.BluetoothRequestCode;
+import static com.example.gibson.myapplication.MainPageFragment.BluetoothRequestCode;
 
 /**
  * Created by gibson on 20/03/2018.
@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
   private TabLayout tabLayout;
   public static RequestQueue requestQueue;
   private static Context mContext;
+  public static boolean isLogin;
 
   public static DatabaseService getDatabaseService() {
     return databaseService;
@@ -65,16 +66,22 @@ public class MainActivity extends AppCompatActivity {
     databaseService = new DatabaseService(this);
 
     if (ContextCompat.checkSelfPermission(this,
-            Manifest.permission.ACCESS_COARSE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED) {
+            Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION)
+                    == PackageManager.PERMISSION_DENIED) {
         Log.v("request", "permission");
       // Should we show an explanation?
-      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-              Manifest.permission.ACCESS_COARSE_LOCATION)) {
-        ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
-                BluetoothRequestCode);
-      }
+      requestPermissions(
+              new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+              BluetoothRequestCode);
+//      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+//              Manifest.permission.ACCESS_FINE_LOCATION)) {
+//        requestPermissions(
+//                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+//                BluetoothRequestCode);
+//      }
     }
 
     init();
@@ -143,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onClick(DialogInterface dialogInterface, int i) {
         ActivityCompat.requestPermissions(MainActivity.this,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                 BluetoothRequestCode);
       }
     });
@@ -177,12 +184,12 @@ public class MainActivity extends AppCompatActivity {
     Intent intent;
     switch (item.getItemId()) {
       case R.id.action_beacon:
-        intent = new Intent(this, BeaconActivity.class);
+        intent = new Intent(this, BeaconFragment.class);
         startActivity(intent);
         break;
 
       case R.id.action_setting:
-        intent = new Intent(this, SettingActivity.class);
+        intent = new Intent(this, SettingFragment.class);
         startActivity(intent);
         break;
     }
@@ -216,13 +223,13 @@ public class MainActivity extends AppCompatActivity {
     public Fragment getItem(int position) {
       switch (position) {
         case 0:
-          return new MainPageActivity();
+          return new MainPageFragment();
         case 1:
-          return new ContactActivity();
+          return new ContactFragment();
         case 2:
-          return new BeaconActivity();
+          return new BeaconFragment();
         case 3:
-          return new SettingActivity();
+          return new SettingFragment();
       }
       return null;
     }
