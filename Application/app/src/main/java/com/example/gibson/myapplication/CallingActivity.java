@@ -2,11 +2,19 @@ package com.example.gibson.myapplication;
 
 import android.content.Intent;
 import android.media.AudioManager;
+<<<<<<< HEAD:Application/app/src/main/java/com/example/gibson/myapplication/CallingActivity.java
+=======
+import android.os.Build;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
+>>>>>>> db69e7368669e3be299c8823f56a86b889a6dcac:Application/app/src/main/java/com/example/gibson/myapplication/Calling.java
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +26,8 @@ import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallListener;
+import com.sinch.android.rtc.video.VideoCallListener;
+import com.sinch.android.rtc.video.VideoController;
 
 import java.util.List;
 
@@ -39,12 +49,12 @@ public class CallingActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calling);
-//        少了要求權限
-        Log.i(TAG, "onCreate: 1");
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE},100);
+        }
         Intent intent = getIntent();
         callerId = intent.getStringExtra("callerId");
         recipientId = intent.getStringExtra("recipientId");
-        Log.i(TAG, "onCreate: "+callerId+recipientId);
         sinchClient = Sinch.getSinchClientBuilder()
                 .context(this)
                 .userId(callerId)
@@ -67,10 +77,10 @@ public class CallingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (call == null) {
-                    call = sinchClient.getCallClient().callUser(recipientId);
+                    call = sinchClient.getCallClient().callUserVideo(recipientId);
                     call.addCallListener(new SinchCallListener());
-                    Log.i(TAG, "onClick: 1");
                     button.setText("Hang Up");
+                    Log.i(TAG, "onClick: cickbtn");
                 } else {
                     call.hangup();
                 }
@@ -85,7 +95,7 @@ public class CallingActivity extends AppCompatActivity {
         });
     }
 
-    private class SinchCallListener implements CallListener {
+    private class SinchCallListener implements VideoCallListener {
         @Override
         public void onCallEnded(Call endedCall) {
             call = null;
@@ -93,12 +103,15 @@ public class CallingActivity extends AppCompatActivity {
             button.setText("Call");
             callState.setText("");
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+
         }
 
         @Override
         public void onCallEstablished(Call establishedCall) {
+            Log.i(TAG, "onCallEstablished");
             callState.setText("connected");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+
         }
 
         @Override
@@ -108,6 +121,22 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onShouldSendPushNotification(Call call, List<PushPair> pushPairs) {
+        }
+
+        @Override
+        public void onVideoTrackAdded(Call call) {
+            Log.i(TAG, "onVideoTrackAdded: added");
+            addVideoViews();
+        }
+
+        @Override
+        public void onVideoTrackPaused(Call call) {
+
+        }
+
+        @Override
+        public void onVideoTrackResumed(Call call) {
+
         }
     }
 
@@ -119,6 +148,25 @@ public class CallingActivity extends AppCompatActivity {
             call.answer();
             call.addCallListener(new SinchCallListener());
             button.setText("Hang Up");
+        }
+    }
+
+    private void addVideoViews() {
+        final VideoController vc = sinchClient.getVideoController();
+        if (vc != null) {
+            RelativeLayout localView = (RelativeLayout) findViewById(R.id.localVideo);
+            localView.addView(vc.getLocalView());
+
+            localView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //this toggles the front camera to rear camera and vice versa
+                    vc.toggleCaptureDevicePosition();
+                }
+            });
+
+            LinearLayout view = (LinearLayout) findViewById(R.id.remoteVideo);
+            view.addView(vc.getRemoteView());
         }
     }
 }
