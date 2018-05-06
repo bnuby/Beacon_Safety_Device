@@ -34,7 +34,12 @@ import static android.content.Context.BIND_AUTO_CREATE;
 
 public class ContactActivity extends Fragment implements View.OnClickListener{
 
+  private static final String APP_KEY = "dd3452d3-6c1a-4f37-8deb-1c9878eb6831";
+  private static final String APP_SECRET = "lxj2OtDCnE2eA3LgY7ur7g==";
+  private static final String ENVIRONMENT = "clientapi.sinch.com";
+
   private Context mContext;
+  private SinchClient sinchClient;
   private Button mLoginButton;
   private String callerId = "callerId";
   private String recipientId = "recipientId";
