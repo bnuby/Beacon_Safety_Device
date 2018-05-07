@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,6 +36,8 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
   EditText mqtt_topic;
   EditText mqtt_username;
   EditText mqtt_password;
+
+  ProgressBar progressBar;
 
   // User Login Configure
   EditText usernameET;
@@ -75,7 +78,7 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
     mqtt_password = _instance.findViewById(R.id.mqtt_password);
     mqtt_loginBtn = _instance.findViewById(R.id.mqtt_login);
     mqtt_loginBtn.setOnClickListener(this);
-
+    progressBar = _instance.findViewById(R.id.progressBar);
 
     // Setting user
     usernameET = _instance.findViewById(R.id.usernameET);
@@ -97,7 +100,6 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
         e.printStackTrace();
       }
     }
-
 
     if(mqtt_service!=null) {
       mqtt_service.setStatusTextView(mqtt_status);

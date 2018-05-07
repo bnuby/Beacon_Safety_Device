@@ -4,18 +4,23 @@
     android:layout_height="match_parent"
     android:padding="0dip">
 
-    <Button
-        android:id="@+id/loginButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="193dp"
-        android:minHeight="56dp"
-        android:minWidth="132dp"
-        android:text="CALL"
-        android:textSize="22sp" />
+    <!--<Button-->
+        <!--android:id="@+id/loginButton"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_centerHorizontal="true"-->
+        <!--android:layout_gravity="center_horizontal"-->
+        <!--android:layout_marginBottom="193dp"-->
+        <!--android:minHeight="56dp"-->
+        <!--android:minWidth="132dp"-->
+        <!--android:text="CALL"-->
+        <!--android:textSize="22sp" />-->
 
 
+    <ListView
+        android:id="@+id/contact_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_centerInParent="true" />
 </RelativeLayout>

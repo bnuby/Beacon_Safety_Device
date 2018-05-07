@@ -10,8 +10,7 @@
     <TextView
         android:id="@+id/tab_item"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.5"
+        android:layout_height="wrap_content"
         android:drawableBottom="@drawable/tab_icon"
         android:text="Text"
         android:textAlignment="center"

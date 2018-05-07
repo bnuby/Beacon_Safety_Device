@@ -1,15 +1,11 @@
 package com.example.gibson.myapplication;
 
+import android.Manifest;
 import android.content.Intent;
 import android.media.AudioManager;
-<<<<<<< HEAD:Application/app/src/main/java/com/example/gibson/myapplication/CallingActivity.java
-=======
 import android.os.Build;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
->>>>>>> db69e7368669e3be299c8823f56a86b889a6dcac:Application/app/src/main/java/com/example/gibson/myapplication/Calling.java
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,7 +21,6 @@ import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
-import com.sinch.android.rtc.calling.CallListener;
 import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
 

@@ -24,7 +24,7 @@ public class RequestManager {
     if (username.isEmpty() || password.isEmpty()) {
       return false;
     }
-    Log.v("login","login");
+    Log.v("login", "login");
 
     JSONObject object = new JSONObject();
     try {
@@ -43,15 +43,18 @@ public class RequestManager {
 
                   Intent intent = new Intent("Login");
                   intent.putExtra("status", true);
-
+                  MainActivity.isLogin = true;
                   MainActivity.sendBroadcastMessage(intent);
+                  MainActivity.sendToast("Success Login");
+                  MainActivity.dissmissLoading();
                 }
               },
               new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                   Log.v("User Login", "Request Fail\n" + error.getMessage());
-                MainActivity.sendToast("error");
+                  MainActivity.sendToast("Login Failed");
+                  MainActivity.dissmissLoading();
                 }
               });
       MainActivity.requestQueue.add(request);
@@ -107,7 +110,7 @@ public class RequestManager {
   }
 
   public static boolean getBeaconData(User user) {
-    if(MainActivity.isLogin) {
+    if (MainActivity.isLogin) {
 
       return true;
     }

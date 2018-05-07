@@ -1,13 +1,10 @@
 package com.example.gibson.myapplication;
 
 import android.annotation.SuppressLint;
-
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.text.Editable;
@@ -64,7 +61,6 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
     beacon_listView.setMotionEventSplittingEnabled(true);
   }
 
-  @RequiresApi(api = Build.VERSION_CODES.O)
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     switch(item.getItemId()) {

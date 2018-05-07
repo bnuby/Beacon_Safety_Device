@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.gibson.myapplication.Services.RequestManager;
+
 public class LoginFragment extends Fragment {
 
   EditText usernameET;
@@ -24,7 +26,17 @@ public class LoginFragment extends Fragment {
     passwordET = view.findViewById(R.id.passwordET);
     loginBtn = view.findViewById(R.id.loginBtn);
 
+    loginBtn.setOnClickListener(clickListener);
     // Inflate the layout for this fragment
     return view;
   }
+
+  View.OnClickListener clickListener = new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+      MainActivity.showLoading("login");
+      RequestManager.loginRequest("ben", "benq");
+    }
+  };
+
 }

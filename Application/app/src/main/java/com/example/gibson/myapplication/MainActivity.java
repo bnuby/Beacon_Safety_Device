@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,6 +55,8 @@ public class MainActivity extends AppCompatActivity {
   public static RequestQueue requestQueue;
   private static Context mContext;
   public static boolean isLogin;
+  static AlertDialog dialog;
+
 
   public static DatabaseService getDatabaseService() {
     return databaseService;
@@ -72,17 +75,13 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_DENIED) {
         Log.v("request", "permission");
-      // Should we show an explanation?
-      requestPermissions(
-              new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-              BluetoothRequestCode);
-//      if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-//              Manifest.permission.ACCESS_FINE_LOCATION)) {
-//        requestPermissions(
-//                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-//                BluetoothRequestCode);
-//      }
+      if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M)
+        requestPermissions(
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                BluetoothRequestCode);
+
     }
+    isLogin = false;
 
     init();
   }
@@ -129,10 +128,10 @@ public class MainActivity extends AppCompatActivity {
     requestQueue = new RequestQueue(cache, network);
     requestQueue.start();
 
-  }
-
-  public void customTabIcons() {
-//    getLayoutInflater().inflate()
+    databaseService.insertContact(0, "asd", "qwe");
+    Log.v("database", databaseService.getContact().toString());
+    databaseService.deleteContact(0);
+    Log.v("database", databaseService.getContact().toString());
   }
 
   @Override
@@ -163,6 +162,22 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog dialog = builder.create();
     dialog.setCancelable(false);
     dialog.show();
+  }
+
+
+  public static void showLoading(String message) {
+    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
+    View view = View.inflate(mContext, R.layout.loading_view, null);
+    TextView textView = view.findViewById(R.id.message);
+    textView.setText(message );
+    builder.setCancelable(false);
+    builder.setView(view);
+    dialog = builder.create();
+    dialog.show();
+  }
+
+  public static void dissmissLoading() {
+    dialog.dismiss();
   }
 
   @Override
@@ -229,7 +244,9 @@ public class MainActivity extends AppCompatActivity {
         case 2:
           return new BeaconFragment();
         case 3:
-          return new SettingFragment();
+          if(isLogin)
+            return new AccountFragment();
+          return new LoginFragment();
       }
       return null;
     }

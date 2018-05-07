@@ -31,7 +31,7 @@ public class DatabaseService extends SQLiteOpenHelper {
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
     String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
     String user = "Create Table User (username TEXT, password TEXT, name TEXT, email TEXT, callerID TEXT)";
-    String contact = "Create Table Contact (name TEXT, id TEXT, phone_number INTEGER)";
+    String contact = "Create Table Contact (name TEXT, recipientID TEXT, id Integer)";
     String mqtt = "Create Table Mqtt (host TEXT, topic TEXT, username TEXT, password TEXT)";
 
     sqLiteDatabase.execSQL(beaconEntries);
@@ -77,6 +77,42 @@ public class DatabaseService extends SQLiteOpenHelper {
     SQLiteDatabase db = _instance.getWritableDatabase();
 
     db.delete("User", null, null);
+  }
+
+  public JSONArray getContact() {
+    SQLiteDatabase db = _instance.getReadableDatabase();
+    ContentValues values = new ContentValues();
+    Cursor cursor = db.query("Contact",
+            null,
+            null,
+            null,
+            null,
+            null,
+            null);
+    JSONArray obj = null;
+    String data = cursorToJson(cursor);
+    try {
+      obj = new JSONArray(data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return obj;
+  }
+
+  public void insertContact(int id, String name, String recipientID) {
+    SQLiteDatabase db = _instance.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put("id", id);
+    values.put("name", name);
+    values.put("recipientID", recipientID);
+
+    db.insert("Contact", null, values);
+  }
+
+  public void deleteContact(int id) {
+    SQLiteDatabase db = _instance.getWritableDatabase();
+
+    db.delete("Contact", "id = '" + id +"'", null);
   }
 
   public long insertBeacon(String name, String mac, double alert_distance) {

@@ -1,32 +1,18 @@
 package com.example.gibson.myapplication;
 
 import android.Manifest;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
 
-import com.example.gibson.myapplication.Services.SinchService;
-import com.sinch.android.rtc.ClientRegistration;
-import com.sinch.android.rtc.Sinch;
 import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.SinchClientListener;
-import com.sinch.android.rtc.SinchError;
-
-import static android.content.Context.BIND_AUTO_CREATE;
 
 /**
  * Created by gibson on 20/03/2018.
@@ -50,15 +36,61 @@ public class ContactActivity extends Fragment implements View.OnClickListener{
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.activity_contact, null);
-    mLoginButton = (Button) view.findViewById(R.id.loginButton);
-    mLoginButton.setOnClickListener(this);
+
+
+//    setContentView(R.layout.activity_calling);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE},100);
+    }
+//    Intent intent = getActivity().getIntent();
+//    callerId = intent.getStringExtra("callerId");
+//    recipientId = intent.getStringExtra("recipientId");
+//    sinchClient = Sinch.getSinchClientBuilder()
+//            .context(getContext())
+//            .userId(callerId)
+//            .applicationKey(APP_KEY)
+//            .applicationSecret(APP_SECRET)
+//            .environmentHost(ENVIRONMENT)
+//            .build();
+//
+//    sinchClient.setSupportCalling(true);
+//    sinchClient.startListeningOnActiveConnection();
+//    sinchClient.start();
+//
+//    sinchClient.getCallClient().addCallClientListener(new CallingActivity.SinchCallClientListener());
+//
+//    button = (Button) findViewById(R.id.testbutton);
+//    callState = (TextView) findViewById(R.id.testtextView);
+//    buttonLogout =findViewById(R.id.testlogout);
+
+//    button.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View view) {
+//        if (call == null) {
+//          call = sinchClient.getCallClient().callUserVideo(recipientId);
+//          call.addCallListener(new CallingActivity.SinchCallListener());
+//          button.setText("Hang Up");
+//          Log.i(TAG, "onClick: cickbtn");
+//        } else {
+//          call.hangup();
+//        }
+//      }
+//    });
+//    buttonLogout.setOnClickListener(new View.OnClickListener() {
+//      @Override
+//      public void onClick(View v) {
+//        sinchClient.stop();
+//        finish();
+//      }
+//    });
+
     return view;
   }
 
 
   @Override
   public void onClick(View v) {
-    Intent intent = new Intent(getContext(),Calling.class);
+    Intent intent = new Intent(getContext(),CallingActivity.class);
     intent.putExtra("callerId",callerId);
     intent.putExtra("recipientId",recipientId);
     startActivity(intent);
