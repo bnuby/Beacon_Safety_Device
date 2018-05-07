@@ -128,9 +128,9 @@ public class MainActivity extends AppCompatActivity {
     requestQueue = new RequestQueue(cache, network);
     requestQueue.start();
 
-    databaseService.insertContact(0, "asd", "qwe");
+    databaseService.insertContact("asd", "qwe");
     Log.v("database", databaseService.getContact().toString());
-    databaseService.deleteContact(0);
+    databaseService.deleteContact("asd", "qwe");
     Log.v("database", databaseService.getContact().toString());
   }
 

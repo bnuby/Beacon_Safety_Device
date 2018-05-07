@@ -31,7 +31,7 @@ public class DatabaseService extends SQLiteOpenHelper {
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
     String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
     String user = "Create Table User (username TEXT, password TEXT, name TEXT, email TEXT, callerID TEXT)";
-    String contact = "Create Table Contact (name TEXT, recipientID TEXT, id Integer)";
+    String contact = "Create Table Contact (name TEXT, recipientID TEXT)";
     String mqtt = "Create Table Mqtt (host TEXT, topic TEXT, username TEXT, password TEXT)";
 
     sqLiteDatabase.execSQL(beaconEntries);
@@ -99,20 +99,19 @@ public class DatabaseService extends SQLiteOpenHelper {
     return obj;
   }
 
-  public void insertContact(int id, String name, String recipientID) {
+  public void insertContact(String name, String recipientID) {
     SQLiteDatabase db = _instance.getWritableDatabase();
     ContentValues values = new ContentValues();
-    values.put("id", id);
     values.put("name", name);
     values.put("recipientID", recipientID);
 
     db.insert("Contact", null, values);
   }
 
-  public void deleteContact(int id) {
+  public void deleteContact(String name, String recipientID) {
     SQLiteDatabase db = _instance.getWritableDatabase();
 
-    db.delete("Contact", "id = '" + id +"'", null);
+    db.delete("Contact", "name = '" + name + "' AND recipientID = '" + recipientID + "'", null);
   }
 
   public long insertBeacon(String name, String mac, double alert_distance) {
@@ -156,12 +155,12 @@ public class DatabaseService extends SQLiteOpenHelper {
     Log.v("mac", mac);
     Log.v("distance", alert_distance + "");
 
-    return db.update("Beacon_Receivers", data, "mac = '" + oldMac + "'",null );
+    return db.update("Beacon_Receivers", data, "mac = '" + oldMac + "'", null);
   }
 
   public int deleteBeacon(String mac) {
     SQLiteDatabase db = _instance.getWritableDatabase();
-    return db.delete("Beacon_Receivers", "mac = '" + mac + "'" , null);
+    return db.delete("Beacon_Receivers", "mac = '" + mac + "'", null);
   }
 
   public JSONArray getMqtt() {
@@ -204,10 +203,10 @@ public class DatabaseService extends SQLiteOpenHelper {
 
   public String cursorToJson(Cursor cursor) {
     StringBuffer array = new StringBuffer("[");
-    while(cursor.moveToNext()) {
+    while (cursor.moveToNext()) {
       array.append("{");
-      for(int i = 0 ; i < cursor.getColumnCount(); i++) {
-        switch(cursor.getType(i)) {
+      for (int i = 0; i < cursor.getColumnCount(); i++) {
+        switch (cursor.getType(i)) {
           case Cursor.FIELD_TYPE_STRING:
             array.append(String.format("'%s' : '%s'",
                     cursor.getColumnName(i),
@@ -225,12 +224,12 @@ public class DatabaseService extends SQLiteOpenHelper {
                     cursor.getFloat(i)));
             break;
         }
-        if(i < cursor.getColumnCount() -1){
+        if (i < cursor.getColumnCount() - 1) {
           array.append(",");
         }
       }
       array.append("}");
-      if(!cursor.isLast()) {
+      if (!cursor.isLast()) {
         array.append(",");
       }
     }

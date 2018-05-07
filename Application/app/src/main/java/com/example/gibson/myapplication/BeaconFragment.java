@@ -84,7 +84,6 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
                 .setView(dialog_layout)
                 .setTitle("Add Beacon");
         dialog = builder.create();
-        dialog.create();
         dialog.show();
         break;
     }
