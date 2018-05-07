@@ -30,6 +30,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   ListView listView;
   private String callerId = "callerId";
   private String recipientId = "recipientId";
+  ArrayList<String> strings = new ArrayList<>();
   private Button addBtn;
 
 
@@ -43,7 +44,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   @Override
   public View onCreateView(final LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
     View view = inflater.inflate(R.layout.activity_contact, null);
-    ArrayList<String> strings = new ArrayList<>();
 
     listView = view.findViewById(R.id.contact_list);
 
@@ -72,6 +72,8 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
             String username = usernameET.getText().toString();
             MainActivity.getDatabaseService().insertContact(name, username);
             Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
+            strings.add(name);
+            listView.invalidateViews();
             dialog.dismiss();
           }
         });
@@ -86,7 +88,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
       }
     });
 
-    strings.add("asdas");
+
 
     ArrayAdapter adapter = new ArrayAdapter(
             getContext(),
