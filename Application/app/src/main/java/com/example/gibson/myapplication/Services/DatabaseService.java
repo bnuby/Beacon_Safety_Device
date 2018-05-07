@@ -7,8 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.example.gibson.myapplication.Model.Beacon;
+
 import org.json.JSONArray;
 import org.json.JSONException;
+
+import java.util.ArrayList;
 
 /**
  * Created by gibson on 22/03/2018.
@@ -29,8 +33,8 @@ public class DatabaseService extends SQLiteOpenHelper {
 
   @Override
   public void onCreate(SQLiteDatabase sqLiteDatabase) {
-    String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
     String user = "Create Table User (username TEXT, password TEXT, name TEXT, email TEXT, callerID TEXT)";
+    String beaconEntries = "Create Table Beacon_Receivers (mac TEXT PRIMARY KEY, name TEXT, alert_distance FLOAT)";
     String contact = "Create Table Contact (name TEXT, recipientID TEXT)";
     String mqtt = "Create Table Mqtt (host TEXT, topic TEXT, username TEXT, password TEXT)";
 
@@ -64,11 +68,14 @@ public class DatabaseService extends SQLiteOpenHelper {
     return obj;
   }
 
-  public void insertUser(String username, String password) {
+  public void insertUser(String username, String password, String name, String email, String callerID) {
     SQLiteDatabase db = _instance.getWritableDatabase();
     ContentValues values = new ContentValues();
     values.put("username", username);
     values.put("password", password);
+    values.put("name", name);
+    values.put("email", email);
+    values.put("callerID", callerID);
 
     db.insert("User", null, values);
   }
@@ -124,7 +131,28 @@ public class DatabaseService extends SQLiteOpenHelper {
     return db.insert("Beacon_Receivers", null, values);
   }
 
-  public JSONArray getBeacons() {
+//  public JSONArray getBeacons() {
+//    SQLiteDatabase db = _instance.getReadableDatabase();
+//    Cursor cursor = db.query("Beacon_Receivers",
+//            null,
+//            null,
+//            null,
+//            null,
+//            null,
+//            null);
+//    JSONArray object = null;
+//    try {
+//      String json = cursorToJson(cursor);
+//      object = new JSONArray(json);
+//    } catch (JSONException e) {
+//      e.printStackTrace();
+//    }
+//
+//    Log.v("cursor", object.toString());
+//    return object;
+//  }
+
+  public ArrayList getBeacons() {
     SQLiteDatabase db = _instance.getReadableDatabase();
     Cursor cursor = db.query("Beacon_Receivers",
             null,
@@ -134,15 +162,17 @@ public class DatabaseService extends SQLiteOpenHelper {
             null,
             null);
     JSONArray object = null;
+    ArrayList<Beacon> beacons = new ArrayList<>();
     try {
       String json = cursorToJson(cursor);
       object = new JSONArray(json);
+      beacons = jsonToBeacons(object);
     } catch (JSONException e) {
       e.printStackTrace();
     }
 
     Log.v("cursor", object.toString());
-    return object;
+    return beacons;
   }
 
   public int updateBeacon(String oldMac, String mac, String name, double alert_distance) {
@@ -235,5 +265,23 @@ public class DatabaseService extends SQLiteOpenHelper {
     }
     array.append("]");
     return array.toString();
+  }
+
+  ArrayList<Beacon> jsonToBeacons(JSONArray array) {
+    ArrayList<Beacon> beaconArrayList = new ArrayList<>();
+    for(int i = 0; i < array.length(); i ++) {
+      try {
+        Beacon beacon = new Beacon(
+                array.getJSONObject(i).getString("name"),
+                array.getJSONObject(i).getString("mac"),
+                array.getJSONObject(i).getDouble("alert_distance")
+        );
+        beaconArrayList.add(beacon);
+
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    return beaconArrayList;
   }
 }

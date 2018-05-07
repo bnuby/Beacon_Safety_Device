@@ -42,6 +42,10 @@
         <activity android:name=".RegisterActivity"></activity>
 
         <activity android:name=".CallingActivity"></activity>
+
+        <service android:name=".Services.ListenArmService"></service>
     </application>
+
+
 
 </manifest>

@@ -19,9 +19,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.gibson.myapplication.Model.Beacon;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -43,7 +41,8 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
 
 //  TextView mqttStatusTV;
   ListView listView;
-  JSONArray beaconArray;
+//  JSONArray beaconArray;
+  ArrayList<Beacon> beacons;
   ArrayList<HashMap<String,Object>> beaconList;
   int interval = 1000;
 
@@ -111,8 +110,6 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
 
     // Bluetooth Get Adapter
 
-
-
     return rootview;
   }
 
@@ -137,22 +134,32 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
     // List View
     listView = group.findViewById(R.id.listView);
 
-    beaconArray = MainActivity.getDatabaseService().getBeacons();
+//    beaconArray = MainActivity.getDatabaseService().getBeacons();
+    beacons = MainActivity.getDatabaseService().getBeacons();
     beaconList = new ArrayList<>();
 
-    for (int i = 0; i < beaconArray.length(); i++) {
-      try {
-        JSONObject obj = beaconArray.getJSONObject(i);
+//    for (int i = 0; i < beaconArray.length(); i++) {
+//      try {
+//        JSONObject obj = beaconArray.getJSONObject(i);
+//        HashMap<String, Object> dict = new HashMap();
+//        dict.put("name",obj.getString("name"));
+//        dict.put("mac",obj.getString("mac"));
+//        dict.put("distance",0);
+//
+//        beaconList.add(dict);
+//      } catch (JSONException e) {
+//        e.printStackTrace();
+//      }
+//    }
+    for (int i = 0; i < beacons.size(); i++) {
+        Beacon beacon = beacons.get(i);
         HashMap<String, Object> dict = new HashMap();
-        dict.put("name",obj.getString("name"));
-        dict.put("mac",obj.getString("mac"));
+        dict.put("name",beacon.name);
+        dict.put("mac",beacon.MAC);
         dict.put("distance",0);
-
         beaconList.add(dict);
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
     }
+
     SimpleAdapter adapter = new SimpleAdapter(
             _instance.getContext(),
             beaconList,

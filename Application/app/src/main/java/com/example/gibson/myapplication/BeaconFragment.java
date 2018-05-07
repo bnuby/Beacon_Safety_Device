@@ -12,7 +12,6 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -22,9 +21,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.gibson.myapplication.Model.Beacon;
+import com.example.gibson.myapplication.Services.RequestManager;
+
+import java.util.ArrayList;
 
 /**
  * Created by gibson on 21/03/2018.
@@ -32,8 +32,10 @@ import org.json.JSONObject;
 
 public class BeaconFragment extends Fragment implements View.OnClickListener, TextWatcher, View.OnKeyListener{
 
-  private ListView beacon_listView;
-  private JSONArray beaconArray;
+  private static ListView beacon_listView;
+  private static ArrayList<Beacon> beacons;
+//  private static JSONArray beaconArray;
+
   private View _instance;
   AlertDialog dialog;
   EditText nameET;
@@ -41,6 +43,12 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
   EditText distanceET;
   View dialog_layout;
   Button addBtn;
+
+  @Override
+  public void onCreate(@Nullable Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    RequestManager.getBeaconData(MainActivity.user);
+  }
 
   @Nullable
   @Override
@@ -53,7 +61,12 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
   private void init(View view) {
     macET = new EditText[6];
     beacon_listView = view.findViewById(R.id.beacon_table_list);
-    beaconArray = MainActivity.getDatabaseService().getBeacons();
+    beacons = new ArrayList<>();
+
+//    beaconArray = MainActivity.getDatabaseService().getBeacons();
+
+    beacons = MainActivity.getDatabaseService().getBeacons();
+
     addBtn = view.findViewById(R.id.beacon_addBtn);
     addBtn.setOnClickListener(this);
     BeaconTableAdapter adapter = new BeaconTableAdapter(_instance.getContext());
@@ -61,38 +74,39 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
     beacon_listView.setMotionEventSplittingEnabled(true);
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    switch(item.getItemId()) {
-      // Add Dialog
-      case R.id.action_beacon_addBtn:
-
-        dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon_add, null);
-        nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
-        for(int i = 1; i <= 6; i++) {
-          macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET"+i, "id", _instance.getContext().getPackageName()));
-          macET[i-1].setOnKeyListener(this);
-          macET[i-1].addTextChangedListener(this);
-        }
-
-        distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
-        final Button okBtn = dialog_layout.findViewById(R.id.beacon_dialog_addBtn);
-        final Button cancelBtn = dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn);
-        okBtn.setOnClickListener(this);
-        cancelBtn.setOnClickListener(this);
-        AlertDialog.Builder builder = new AlertDialog.Builder(_instance.getContext())
-                .setView(dialog_layout)
-                .setTitle("Add Beacon");
-        dialog = builder.create();
-        dialog.show();
-        break;
-    }
-    return super.onOptionsItemSelected(item);
-  }
+//  @Override
+//  public boolean onOptionsItemSelected(MenuItem item) {
+//    switch(item.getItemId()) {
+//      // Add Dialog
+//      case R.id.action_beacon_addBtn:
+//
+//        dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon_add, null);
+//        nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
+//        for(int i = 1; i <= 6; i++) {
+//          macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET"+i, "id", _instance.getContext().getPackageName()));
+//          macET[i-1].setOnKeyListener(this);
+//          macET[i-1].addTextChangedListener(this);
+//        }
+//
+//        distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
+//        final Button okBtn = dialog_layout.findViewById(R.id.beacon_dialog_addBtn);
+//        final Button cancelBtn = dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn);
+//        okBtn.setOnClickListener(this);
+//        cancelBtn.setOnClickListener(this);
+//        AlertDialog.Builder builder = new AlertDialog.Builder(_instance.getContext())
+//                .setView(dialog_layout)
+//                .setTitle("Add Beacon");
+//        dialog = builder.create();
+//        dialog.show();
+//        break;
+//    }
+//    return super.onOptionsItemSelected(item);
+//  }
 
   @Override
   public void onClick(View view) {
     String mac;
+    Beacon beacon;
     switch(view.getId()) {
       case R.id.beacon_addBtn:
         dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon_add, null);
@@ -126,13 +140,18 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
             break;
           }
           long status = MainActivity.getDatabaseService().insertBeacon(name, mac, distance);
-          if(status != -1)
-            try {
-              beaconArray.put(new JSONObject(String.format("{'mac':'%s', 'name':'%s', 'alert_distance':%f}", mac, name, distance)));
-              beacon_listView.invalidateViews();
-            } catch (JSONException e) {
-              e.printStackTrace();
-            }
+          if(status != -1) {
+//            try {
+//            beaconArray.put(new JSONObject(String.format("{'mac':'%s', 'name':'%s', 'alert_distance':%f}", mac, name, distance)));
+            beacon = new Beacon(name, mac, distance);
+            beacons.add(beacon);
+            RequestManager.insertBeaconData(MainActivity.user, beacon);
+            beacon_listView.invalidateViews();
+//            } catch (JSONException e) {
+//              e.printStackTrace();
+//            }
+          }
+
           else
             new AlertDialog.Builder(_instance.getContext()).setMessage("Mac Address is Used!")
                     .setNeutralButton("OK", new DialogInterface.OnClickListener() {
@@ -146,24 +165,32 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
         break;
 
       case R.id.beacon_dialog_updateBtn:
-        try {
-          JSONObject object = beaconArray.getJSONObject((Integer) view.getTag());
-          name = nameET.getText().toString();
+//        try {
+//          JSONObject object = beaconArray.getJSONObject((Integer) view.getTag());
+        beacon = beacons.get((Integer) view.getTag());
+
+        name = nameET.getText().toString();
           mac = getMacAddress(macET);
           distance = Double.parseDouble(distanceET.getText().toString());
+
           Log.v("name", name);
           Log.v("mac", mac);
           Log.v("distance", distance + "");
 
-          MainActivity.getDatabaseService().updateBeacon(object.getString("mac"),mac, name, distance);
-          object.put("mac", mac);
-          object.put("name", name);
-          object.put("alert_distance", distance);
+//          MainActivity.getDatabaseService().updateBeacon(object.getString("mac"),mac, name, distance);
+//          object.put("mac", mac);
+//          object.put("name", name);
+//          object.put("alert_distance", distance);
+
+          MainActivity.getDatabaseService().updateBeacon(beacon.MAC,mac, name, distance);
+          beacon.MAC = mac;
+          beacon.name = name;
+          beacon.alert_distance = distance;
           beacon_listView.invalidateViews();
           dialog.cancel();
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+//        } catch (JSONException e) {
+//          e.printStackTrace();
+//        }
         break;
 
       case R.id.beacon_editBtn:
@@ -172,11 +199,18 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
         nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
         distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
         macET = new EditText[6];
-        try {
-          JSONObject object = beaconArray.getJSONObject((Integer) btn.getTag());
-          nameET.setText(object.getString("name"));
-          String[] macArray = object.getString("mac").split(":");
-          distanceET.setText(object.getString("alert_distance"));
+//        try {
+//          JSONObject object = beaconArray.getJSONObject((Integer) btn.getTag());
+//          nameET.setText(object.getString("name"));
+//          String[] macArray = object.getString("mac").split(":");
+//          distanceET.setText(object.getString("alert_distance"));
+
+          beacon = beacons.get((Integer) btn.getTag());
+          nameET.setText(beacon.name);
+          String[] macArray = beacon.MAC.split(":");
+          distanceET.setText(beacon.alert_distance + "");
+
+
           for (int i = 1; i <= macET.length; i ++) {
             macET[i-1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET" + i, "id", dialog_layout.getContext().getPackageName()));
             macET[i-1].setText(macArray[i - 1]);
@@ -190,28 +224,36 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
           dialog = builder2.create();
           dialog.create();
           dialog.show();
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+//        } catch (JSONException e) {
+//          e.printStackTrace();
+//        }
 
         break;
 
       case R.id.beacon_deleteBtn:
-        try {
+//        try {
           int i = Integer.parseInt(view.getTag()+"");
-          mac = beaconArray.getJSONObject(i).getString("mac");
+//          mac = beaconArray.getJSONObject(i).getString("mac");
+          mac = beacons.get(i).MAC;
           status = MainActivity.getDatabaseService().deleteBeacon(mac);
           if(status == 1) {
-            beaconArray.remove(i);
+//            beaconArray.remove(i);
+            beacons.remove(i);
             beacon_listView.invalidateViews();
           }
 
-        } catch (JSONException e) {
-          e.printStackTrace();
-        }
+//        } catch (JSONException e) {
+//          e.printStackTrace();
+//        }
         break;
       default:
     }
+  }
+
+  public static void updateBeaconArray(ArrayList<Beacon> beacons) {
+//    beaconArray = array;
+    BeaconFragment.beacons = beacons;
+    beacon_listView.invalidateViews();
   }
 
   public static String getMacAddress(EditText[] mac) {
@@ -280,7 +322,8 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
 
     @Override
     public int getCount() {
-      return beaconArray.length();
+//      return beaconArray.length();
+      return beacons.size();
     }
 
     @Override
@@ -311,17 +354,22 @@ public class BeaconFragment extends Fragment implements View.OnClickListener, Te
       editBtn.setOnClickListener(BeaconFragment.this);
       deleteBtn.setOnClickListener(BeaconFragment.this);
 
-      try {
-        final JSONObject currentObj = beaconArray.getJSONObject(i);
-        final String mac = currentObj.getString("mac");
+//      try {
+//        final JSONObject currentObj = beaconArray.getJSONObject(i);
+        final Beacon current = beacons.get(i);
+
+//        final String mac = currentObj.getString("mac");
+        final String mac = current.MAC;
+
         macTV.setText(mac);
-        nameTV.setText(currentObj.getString("name"));
-        distanceTV.setText(currentObj.getDouble("alert_distance")+"");
+//        nameTV.setText(currentObj.getString("name"));
+        nameTV.setText(current.name);
+        distanceTV.setText(current.alert_distance+"");
 
 
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
+//      } catch (JSONException e) {
+//        e.printStackTrace();
+//      }
 
       return view1;
     }

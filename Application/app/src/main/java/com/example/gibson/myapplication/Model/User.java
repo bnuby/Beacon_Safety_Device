@@ -1,15 +1,13 @@
 package com.example.gibson.myapplication.Model;
 
 public class User {
-  public int id;
   public String name;
   public String username;
   public String password;
   public String email;
   public String callerID;
 
-  public User(int id, String name, String username, String password, String email, String callerID) {
-    this.id = id;
+  public User(String name, String username, String password, String email, String callerID) {
     this.name = name;
     this.username = username;
     this.password = password;

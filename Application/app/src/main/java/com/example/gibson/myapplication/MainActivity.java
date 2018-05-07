@@ -2,12 +2,15 @@ package com.example.gibson.myapplication;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -31,8 +34,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.DatabaseService;
+import com.example.gibson.myapplication.Services.ListenArmService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
+import com.example.gibson.myapplication.Services.RequestManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -47,10 +53,11 @@ import static com.example.gibson.myapplication.MainPageFragment.BluetoothRequest
 public class MainActivity extends AppCompatActivity {
 
   private final int NUM_PAGES = 4;
+  public static User user;
   public static MQTT_SERVICE mqtt_service;
   private static DatabaseService databaseService;
   private ViewPager viewPager;
-  private ViewPagerAdapter pagerAdapter;
+  private static ViewPagerAdapter pagerAdapter;
   private TabLayout tabLayout;
   public static RequestQueue requestQueue;
   private static Context mContext;
@@ -74,16 +81,31 @@ public class MainActivity extends AppCompatActivity {
             ContextCompat.checkSelfPermission(this,
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_DENIED) {
-        Log.v("request", "permission");
+      Log.v("request", "permission");
       if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M)
         requestPermissions(
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                 BluetoothRequestCode);
 
     }
-    isLogin = false;
+    JSONArray jsonArray = databaseService.getUser();
 
+    if(jsonArray.length() != 0) {
+      isLogin = true;
+      try {
+        JSONObject jsonObject = jsonArray.getJSONObject(0);
+        RequestManager.loginRequest(jsonObject.getString("username"), jsonObject.getString("password"));
+      } catch (JSONException e) {
+        e.printStackTrace();
+      }
+    }
+    else
+        isLogin = false;
     init();
+
+    Intent intent = new Intent(this, ListenArmService.class);
+
+//    bindService(intent, new MyServiceConn(), Context.BIND_AUTO_CREATE);
   }
 
   public void init() {
@@ -191,7 +213,6 @@ public class MainActivity extends AppCompatActivity {
         }
         break;
     }
-
   }
 
   @Override
@@ -220,6 +241,9 @@ public class MainActivity extends AppCompatActivity {
     mContext.sendBroadcast(intent);
   }
 
+  public static void updateViewPager() {
+    pagerAdapter.notifyDataSetChanged();
+  }
 
   // Custom View Pager Adapter
   private class ViewPagerAdapter extends FragmentStatePagerAdapter {
@@ -273,6 +297,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+  }
+
+  class MyServiceConn implements ServiceConnection {
+    public void onServiceConnected(ComponentName classname,
+                                   IBinder service) {
+      Log.d("LINCYU", "Activity: onServiceConnected");
+    }
+
+    public void onServiceDisconnected(ComponentName classname) {
+    }
   }
 
 }

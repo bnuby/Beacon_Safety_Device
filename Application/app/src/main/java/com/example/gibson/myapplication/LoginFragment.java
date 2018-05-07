@@ -36,6 +36,8 @@ public class LoginFragment extends Fragment {
     public void onClick(View v) {
       MainActivity.showLoading("login");
       RequestManager.loginRequest("ben", "benq");
+      MainActivity.isLogin = true;
+      MainActivity.updateViewPager();
     }
   };
 
