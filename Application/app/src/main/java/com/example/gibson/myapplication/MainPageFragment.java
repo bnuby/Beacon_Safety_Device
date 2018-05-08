@@ -46,6 +46,14 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
   ArrayList<HashMap<String,Object>> beaconList;
   int interval = 1000;
 
+  private static MainPageFragment mainPageFragment;
+
+  public static MainPageFragment getFragment() {
+    if (mainPageFragment == null)
+      mainPageFragment = new MainPageFragment();
+    return mainPageFragment;
+  }
+
   protected ScanCallback mScanCallback = new ScanCallback() {
     @Override
     public void onScanResult(int callbackType, ScanResult result) {

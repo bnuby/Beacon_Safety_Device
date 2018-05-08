@@ -11,11 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gibson.myapplication.Model.Contact;
+import com.example.gibson.myapplication.Services.RequestManager;
 
 import java.util.ArrayList;
 
@@ -27,17 +31,26 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
   private static final String TAG = "LoginActivity";
   final int REQUESTCALL = 2;
-  ListView listView;
+  static ListView listView;
   private String callerId = "callerId";
   private String recipientId = "recipientId";
   ArrayList<String> strings = new ArrayList<>();
+  static ArrayList<Contact> contacts;
   private Button addBtn;
 
+  private static ContactFragment contactFragment;
+
+  public static ContactFragment getFragment() {
+    if (contactFragment == null)
+      contactFragment = new ContactFragment();
+    return contactFragment;
+  }
 
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     requestPermission();
+    contacts = new ArrayList<>();
   }
 
   @Nullable
@@ -69,11 +82,11 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           @Override
           public void onClick(View v) {
             String name = nameET.getText().toString();
-            String username = usernameET.getText().toString();
-            MainActivity.getDatabaseService().insertContact(name, username);
+            String recipientID = usernameET.getText().toString();
+//            MainActivity.getDatabaseService().insertContact(name, recipientID);
             Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
-            strings.add(name);
-            listView.invalidateViews();
+            RequestManager.registerContact(MainActivity.user,
+                    new Contact(name, recipientID));
             dialog.dismiss();
           }
         });
@@ -90,15 +103,18 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
 
 
-    ArrayAdapter adapter = new ArrayAdapter(
-            getContext(),
-            android.R.layout.simple_list_item_1,
-          strings
-    );
+    ContactAdapter adapter = new ContactAdapter();
     listView.setAdapter(adapter);
     listView.setOnItemClickListener(itemClickListener);
+    update_contact_list();
 
     return view;
+  }
+
+  public static void update_contact_list() {
+    ArrayList<Contact> contacts = MainActivity.getDatabaseService().getContact();
+    ContactFragment.contacts = contacts;
+    listView.invalidateViews();
   }
 
   AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
@@ -160,5 +176,48 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 //    intent.putExtra("callerId", callerId);
 //    intent.putExtra("recipientId", recipientId);
 //    startActivity(intent);
+    }
+
+    public class ContactAdapter extends BaseAdapter {
+
+      public ContactAdapter() {
+        super();
+      }
+
+      @Override
+      public int getCount() {
+        return contacts.size();
+      }
+
+      @Override
+      public Contact getItem(int position) {
+        return contacts.get(position);
+      }
+
+      @Override
+      public long getItemId(int position) {
+        return position;
+      }
+
+      @Override
+      public View getView(int position, View convertView, ViewGroup parent) {
+
+        if(convertView == null) {
+          convertView = getLayoutInflater().inflate(R.layout.contact_list, parent, false);
+        }
+
+        TextView name = convertView.findViewById(R.id.contactTV);
+        name.setText(contacts.get(position).name);
+        Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
+        deleteBtn.setTag(contacts.get(position));
+        deleteBtn.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            Contact contact = (Contact) v.getTag();
+            RequestManager.deleteContact(MainActivity.user, contact);
+          }
+        });
+        return convertView;
+      }
     }
 }

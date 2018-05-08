@@ -38,7 +38,6 @@ import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.ListenArmService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
-import com.example.gibson.myapplication.Services.RequestManager;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -57,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
   public static MQTT_SERVICE mqtt_service;
   private static DatabaseService databaseService;
   private ViewPager viewPager;
-  private static ViewPagerAdapter pagerAdapter;
+  private ViewPagerAdapter pagerAdapter;
   private TabLayout tabLayout;
-  public static RequestQueue requestQueue;
+  static RequestQueue requestQueue;
   private static Context mContext;
-  public static boolean isLogin;
   static AlertDialog dialog;
 
+  public static RequestQueue getQueue() { return requestQueue; }
 
   public static DatabaseService getDatabaseService() {
     return databaseService;
@@ -88,19 +87,8 @@ public class MainActivity extends AppCompatActivity {
                 BluetoothRequestCode);
 
     }
-    JSONArray jsonArray = databaseService.getUser();
 
-    if(jsonArray.length() != 0) {
-      isLogin = true;
-      try {
-        JSONObject jsonObject = jsonArray.getJSONObject(0);
-        RequestManager.loginRequest(jsonObject.getString("username"), jsonObject.getString("password"));
-      } catch (JSONException e) {
-        e.printStackTrace();
-      }
-    }
-    else
-        isLogin = false;
+    MainActivity.user = DatabaseService.getDatabaseService().getUser();
     init();
 
     Intent intent = new Intent(this, ListenArmService.class);
@@ -149,11 +137,6 @@ public class MainActivity extends AppCompatActivity {
 
     requestQueue = new RequestQueue(cache, network);
     requestQueue.start();
-
-    databaseService.insertContact("asd", "qwe");
-    Log.v("database", databaseService.getContact().toString());
-    databaseService.deleteContact("asd", "qwe");
-    Log.v("database", databaseService.getContact().toString());
   }
 
   @Override
@@ -241,8 +224,16 @@ public class MainActivity extends AppCompatActivity {
     mContext.sendBroadcast(intent);
   }
 
-  public static void updateViewPager() {
-    pagerAdapter.notifyDataSetChanged();
+  @Override
+  protected void onResume() {
+    super.onResume();
+    requestQueue.start();
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    requestQueue.stop();
   }
 
   // Custom View Pager Adapter
@@ -262,15 +253,13 @@ public class MainActivity extends AppCompatActivity {
     public Fragment getItem(int position) {
       switch (position) {
         case 0:
-          return new MainPageFragment();
+          return MainPageFragment.getFragment();
         case 1:
-          return new ContactFragment();
+          return ContactFragment.getFragment();
         case 2:
-          return new BeaconFragment();
+          return BeaconFragment.getFragment();
         case 3:
-          if(isLogin)
-            return new AccountFragment();
-          return new LoginFragment();
+          return AccountFragment.getFragment();
       }
       return null;
     }
@@ -295,7 +284,6 @@ public class MainActivity extends AppCompatActivity {
     public int getCount() {
       return NUM_PAGES;
     }
-
 
   }
 

@@ -1,11 +1,11 @@
 package com.example.gibson.myapplication.Model;
 
 public class Contact {
-  public int id;
+  public String recipientID;
   public String name;
 
-  public Contact(int id, String name) {
-    this.id = id;
+  public Contact(String recipientID, String name) {
+    this.recipientID = recipientID;
     this.name = name;
   }
 }
