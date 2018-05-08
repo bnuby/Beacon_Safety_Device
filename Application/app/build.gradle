@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-
+    buildToolsVersion '27.0.3'
 }
 
 
@@ -35,11 +35,9 @@ dependencies {
     implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
         exclude module: 'support-v4'
     }
-
     // https://mvnrepository.com/artifact/com.android.volley/volley
-    implementation group: 'com.android.volley', name: 'volley', version: '1.1.0'
-
-//    implementation files('libs/sinch-android-rtc-3.8.0-VIDEO-SNAPSHOT.jar')
+    implementation 'com.android.volley:volley:1.1.0'
+    //    implementation files('libs/sinch-android-rtc-3.8.0-VIDEO-SNAPSHOT.jar')
     implementation(name: 'sinch-android-rtc', version: '+', ext: 'aar')
     implementation 'com.android.support:design:27.1.0'
 }

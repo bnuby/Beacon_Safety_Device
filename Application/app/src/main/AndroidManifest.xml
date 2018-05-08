@@ -44,6 +44,7 @@
         <activity android:name=".CallingActivity"></activity>
 
         <service android:name=".Services.ListenArmService"></service>
+        <service android:name=".Services.SinchLoginService" />
     </application>
 
 

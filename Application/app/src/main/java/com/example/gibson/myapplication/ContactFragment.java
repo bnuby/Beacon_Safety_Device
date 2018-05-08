@@ -2,11 +2,17 @@ package com.example.gibson.myapplication;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +23,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.gibson.myapplication.Services.SinchLoginService;
+import com.sinch.android.rtc.calling.Call;
+
 import java.util.ArrayList;
 
 /**
@@ -25,19 +34,32 @@ import java.util.ArrayList;
 
 public class ContactFragment extends Fragment implements View.OnClickListener {
 
-  private static final String TAG = "LoginActivity";
+  private static final String TAG = "ContactFragment";
   final int REQUESTCALL = 2;
   ListView listView;
   private String callerId = "callerId";
-  private String recipientId = "recipientId";
   ArrayList<String> strings = new ArrayList<>();
   private Button addBtn;
+  private  SinchLoginService.SinchBinder sinchBinder;
 
+  private ServiceConnection connection = new ServiceConnection() {
+    @Override
+    public void onServiceConnected(ComponentName name, IBinder service) {
+      sinchBinder = (SinchLoginService.SinchBinder)service;
+      Log.i(TAG, "onServiceConnected: ");
+      sinchBinder.startClient(callerId);
+    }
 
+    @Override
+    public void onServiceDisconnected(ComponentName name) {
+
+    }
+  };
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     requestPermission();
+    getActivity().bindService(new Intent(getContext(), SinchLoginService.class),connection, Context.BIND_AUTO_CREATE);
   }
 
   @Nullable
@@ -104,7 +126,11 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+      Toast.makeText(getContext(), strings.get(position), Toast.LENGTH_SHORT).show();
+      Call call = sinchBinder.callUserVideo(strings.get(position));
+      Intent callingact = new Intent(getContext(),CallingActivity.class);
+      callingact.putExtra("recipientId",strings.get(position));
+      startActivity(callingact);
     }
   };
 
