@@ -55,6 +55,13 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
     }
   };
+
+  @Override
+  public void onDestroy() {
+    getActivity().unbindService(connection);
+    super.onDestroy();
+  }
+
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

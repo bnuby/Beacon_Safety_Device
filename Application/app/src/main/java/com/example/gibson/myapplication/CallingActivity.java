@@ -55,6 +55,7 @@ public class CallingActivity extends AppCompatActivity {
                 }
             } else {
                 Log.i("Wrong name", "Wrong");
+//                unbindService(connection);
                 finish();
             }
             updateUI();
@@ -73,6 +74,7 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            Log.i(TAG, "onServiceDisconnected: ");
 
         }
     };
@@ -83,7 +85,7 @@ public class CallingActivity extends AppCompatActivity {
         if (call != null) {
             if (call.getState() == CallState.ESTABLISHED) {
                 //when the call is established, addVideoViews configures the video to  be shown
-                addVideoViews();
+//                addVideoViews();
             }
             if(call.getState().toString().equals("INITIATING")){
                 call.answer();
@@ -106,22 +108,24 @@ public class CallingActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(CallingActivity.this,call.getState().toString(),LENGTH_LONG).show();
-                if (call != null) {
-                    call.hangup();
-                    finish();
-                }
+                call.hangup();
+                finish();
+
             }
         });
     }
 
+    @Override
+    protected void onDestroy() {
+        unbindService(connection);
+        super.onDestroy();
+    }
 
     private class SinchCallListener implements VideoCallListener {
         @Override
         public void onCallEnded(Call endedCall) {
             call = null;
             SinchError a = endedCall.getDetails().getError();
-//            callState.setText("");
             setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
             finish();
 
