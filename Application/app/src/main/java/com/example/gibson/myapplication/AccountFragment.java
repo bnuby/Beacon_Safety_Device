@@ -17,6 +17,7 @@ public class AccountFragment extends Fragment {
   // Account View
   TextView nameTV;
   TextView callerIDTV;
+  Button receiveBtn;
   Button logoutBtn;
   boolean bool = true;
   static View accountView;
@@ -40,7 +41,7 @@ public class AccountFragment extends Fragment {
 
     nameTV.setText(MainActivity.user.name);
     callerIDTV.setText(MainActivity.user.callerID);
-
+    receiveBtn = accountView.findViewById(R.id.receiveBtn);
     logoutBtn = accountView.findViewById(R.id.logOutBtn);
 
     logoutBtn.setOnClickListener(new View.OnClickListener() {

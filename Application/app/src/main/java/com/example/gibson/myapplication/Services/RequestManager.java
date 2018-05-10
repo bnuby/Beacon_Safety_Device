@@ -32,7 +32,7 @@ public class RequestManager {
 
     String url = host + "/login";
     if (username.isEmpty() || password.isEmpty()) {
-      LoginActivity.dissmissLoading();
+      LoginActivity.dismissLoading();
       return false;
     }
     Log.v("login", "login");
@@ -72,7 +72,7 @@ public class RequestManager {
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
-                LoginActivity.dissmissLoading();
+                LoginActivity.dismissLoading();
               }
             },
             new Response.ErrorListener() {
@@ -82,7 +82,7 @@ public class RequestManager {
 
                 Log.v("User Login", "Request Fail\n" + error.getMessage());
                 LoginActivity.sendToast("Login Failed");
-                LoginActivity.dissmissLoading();
+                LoginActivity.dismissLoading();
               }
             }) {
       @Override
@@ -114,10 +114,10 @@ public class RequestManager {
                     int status = new JSONObject(response).getInt("status");
                     if (status == 200)
                       Log.v("Logout", "Success");
-                    MainActivity.dissmissLoading();
+                    MainActivity.dismissLoading();
                   } catch (JSONException e) {
                     MainActivity.sendToast("Login Fail");
-                    MainActivity.dissmissLoading();
+                    MainActivity.dismissLoading();
                     e.printStackTrace();
                   }
                 }
@@ -143,11 +143,11 @@ public class RequestManager {
   }
 
   public static boolean registerRequest(final JSONObject jsonObject) {
+    RegisterActivity.showLoading("Registering..");
     Log.v("register", "pp");
     if (!jsonObject.has("username") && !jsonObject.has("password")
             && !jsonObject.has("email") && !jsonObject.has("nickname")) {
       RegisterActivity.dissmissLoading(400);
-      Log.v("register", "ii");
       return false;
     }
     Log.v("register", jsonObject.toString());
@@ -415,7 +415,7 @@ public class RequestManager {
                   MainActivity.sendToast("Add Fail");
 
                 }
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             },
             new Response.ErrorListener() {
@@ -423,7 +423,7 @@ public class RequestManager {
               public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
                 MainActivity.sendToast("Connection Fail. \nPlease Check Your network");
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             }
     ) {
@@ -469,14 +469,14 @@ public class RequestManager {
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             },
             new Response.ErrorListener() {
               @Override
               public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             }
     );
@@ -505,14 +505,14 @@ public class RequestManager {
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             },
             new Response.ErrorListener() {
               @Override
               public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                MainActivity.dissmissLoading();
+                MainActivity.dismissLoading();
               }
             }
     );

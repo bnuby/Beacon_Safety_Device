@@ -239,8 +239,10 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
         TextView name = convertView.findViewById(R.id.contactTV);
         name.setText(contacts.get(position).name);
+
         Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(contacts.get(position));
+
         deleteBtn.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {

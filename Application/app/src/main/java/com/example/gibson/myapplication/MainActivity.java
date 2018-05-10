@@ -3,7 +3,6 @@ package com.example.gibson.myapplication;
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -20,7 +19,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,6 +32,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
+import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.ListenArmService;
@@ -49,7 +48,7 @@ import static com.example.gibson.myapplication.MainPageFragment.BluetoothRequest
  * Created by gibson on 20/03/2018.
  */
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BeaconBaseActivity {
 
   private final int NUM_PAGES = 4;
   public static User user;
@@ -59,8 +58,6 @@ public class MainActivity extends AppCompatActivity {
   private ViewPagerAdapter pagerAdapter;
   private TabLayout tabLayout;
   static RequestQueue requestQueue;
-  private static Context mContext;
-  static AlertDialog dialog;
 
   public static RequestQueue getQueue() { return requestQueue; }
 
@@ -97,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
   }
 
   public void init() {
-    mContext = this;
     JSONArray mqttArray = getDatabaseService().getMqtt();
     Log.v("mqttarray", mqttArray.toString());
     if(mqttArray != null && mqttArray.length() != 0) {
@@ -167,22 +163,6 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog dialog = builder.create();
     dialog.setCancelable(false);
     dialog.show();
-  }
-
-
-  public static void showLoading(String message) {
-    AlertDialog.Builder builder = new AlertDialog.Builder(mContext);
-    View view = View.inflate(mContext, R.layout.loading_view, null);
-    TextView textView = view.findViewById(R.id.message);
-    textView.setText(message );
-    builder.setCancelable(false);
-    builder.setView(view);
-    dialog = builder.create();
-    dialog.show();
-  }
-
-  public static void dissmissLoading() {
-    dialog.dismiss();
   }
 
   @Override
