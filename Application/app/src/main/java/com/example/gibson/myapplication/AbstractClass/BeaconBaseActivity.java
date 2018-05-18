@@ -37,7 +37,7 @@ public class BeaconBaseActivity extends AppCompatActivity{
     dialog.show();
   }
 
-  public static void dissmissLoading() {
+  public static void dismissLoading() {
     dialog.dismiss();
   }
 

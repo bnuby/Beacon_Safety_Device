@@ -12,6 +12,7 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,8 +33,6 @@ import com.sinch.android.rtc.video.VideoController;
 
 import java.util.List;
 
-import static android.widget.Toast.LENGTH_LONG;
-
 public class CallingActivity extends AppCompatActivity {
 
     private static final String TAG = "CallingActivity";
@@ -41,34 +40,26 @@ public class CallingActivity extends AppCompatActivity {
     private String recipientId;
     private Button button;
     private SinchLoginService.SinchBinder sinchBinder;
-
+    private RelativeLayout localView;
+    private LinearLayout view;
     private ServiceConnection connection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             if (SinchLoginService.class.getName().equals(name.getClassName())) {
-
                 sinchBinder = (SinchLoginService.SinchBinder) service;
                 Log.i(TAG, "onServiceConnected: ");
                 call = sinchBinder.getCall(recipientId);
                 if (call != null) {
+                    Log.i(TAG, "onServiceConnected: addlistener");
                     call.addCallListener(new SinchCallListener());
+                }
+                else {
+                    Log.i(TAG, "onServiceConnected: call isnull");
                 }
             } else {
                 Log.i("Wrong name", "Wrong");
-//                unbindService(connection);
-                finish();
             }
             updateUI();
-
-//            if (call != null) {
-//                mCallerName.setText(call.getRemoteUserId());
-//                mCallState.setText(call.getState().toString());
-//                if (call.getState() == CallState.ESTABLISHED) {
-//                    //when the call is established, addVideoViews configures the video to  be shown
-//                    addVideoViews();
-//                }
-//            }
-
         }
 
 
@@ -80,15 +71,18 @@ public class CallingActivity extends AppCompatActivity {
     };
     private void updateUI() {
         if (sinchBinder == null) {
+            Log.i(TAG, "updateUI: sinchbinderisnull");
             return; // early
         }
         if (call != null) {
-            if (call.getState() == CallState.ESTABLISHED) {
-                //when the call is established, addVideoViews configures the video to  be shown
-//                addVideoViews();
-            }
             if(call.getState().toString().equals("INITIATING")){
+                Log.i(TAG, "updateUI: getcall");
                 call.answer();
+            }
+            if (call.getState() == CallState.ESTABLISHED) {
+                Log.i(TAG, "updateUI: add");
+                //when the call is established, addVideoViews configures the video to  be shown
+                addVideoViews();
             }
         }
 
@@ -108,8 +102,16 @@ public class CallingActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                call.hangup();
-                finish();
+                String KK;
+                call =sinchBinder.getCall(recipientId);
+                if(call!=null) {
+                    KK = call.getState().toString();
+                    call.hangup();
+                    Log.i(TAG, "onClick: "+KK);
+                    finish();
+                }
+
+
 
             }
         });
@@ -124,11 +126,17 @@ public class CallingActivity extends AppCompatActivity {
     private class SinchCallListener implements VideoCallListener {
         @Override
         public void onCallEnded(Call endedCall) {
-            call = null;
-            SinchError a = endedCall.getDetails().getError();
-            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            Log.i(TAG, "onCallEnded: ");
+//            call = null;
+//            SinchError a = endedCall.getDetails().getError();
+//            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            if (call != null) {
+                localView.removeAllViews();
+                view.removeAllViews();
+                call.hangup();
+                Log.i(TAG, "onCallEnded: hanguo");
+            }
             finish();
-
         }
 
         @Override
@@ -136,7 +144,6 @@ public class CallingActivity extends AppCompatActivity {
             Log.i(TAG, "onCallEstablished");
             button.setText("hangup");
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
-
         }
 
         @Override
@@ -150,6 +157,7 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onVideoTrackAdded(Call call) {
+
             Log.i(TAG, "onVideoTrackAdded: added");
             addVideoViews();
         }
@@ -168,7 +176,7 @@ public class CallingActivity extends AppCompatActivity {
     private void addVideoViews() {
         final VideoController vc = sinchBinder.getVideoController();
         if (vc != null) {
-            RelativeLayout localView = (RelativeLayout) findViewById(R.id.localVideo);
+            localView = (RelativeLayout) findViewById(R.id.localVideo);
             localView.addView(vc.getLocalView());
 
             localView.setOnClickListener(new View.OnClickListener() {
@@ -179,7 +187,7 @@ public class CallingActivity extends AppCompatActivity {
                 }
             });
 
-            LinearLayout view = (LinearLayout) findViewById(R.id.remoteVideo);
+            view = (LinearLayout) findViewById(R.id.remoteVideo);
             view.addView(vc.getRemoteView());
         }
     }

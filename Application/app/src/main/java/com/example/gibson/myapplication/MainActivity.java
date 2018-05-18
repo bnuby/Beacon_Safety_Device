@@ -34,6 +34,7 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Model.User;
+import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.ListenArmService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
@@ -90,7 +91,6 @@ public class MainActivity extends BeaconBaseActivity {
 
     Intent intent = new Intent(this, ListenArmService.class);
 
-//    bindService(intent, new MyServiceConn(), Context.BIND_AUTO_CREATE);
   }
 
   public void init() {
@@ -133,6 +133,8 @@ public class MainActivity extends BeaconBaseActivity {
 
     requestQueue = new RequestQueue(cache, network);
     requestQueue.start();
+
+
   }
 
   @Override

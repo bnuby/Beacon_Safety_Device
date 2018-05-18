@@ -37,7 +37,6 @@ public class DatabaseService extends SQLiteOpenHelper {
   public DatabaseService(Context context) {
     super(context, NAME, null, VERSION);
     _instance = this;
-
   }
 
   @Override
@@ -304,8 +303,9 @@ public class DatabaseService extends SQLiteOpenHelper {
   }
 
   User jsonToUser(JSONArray array) {
+    if(array.length() == 0)
+      return null;
     try {
-
       User user = new User(
               array.getJSONObject(0).getString("name"),
               array.getJSONObject(0).getString("username"),
@@ -314,7 +314,6 @@ public class DatabaseService extends SQLiteOpenHelper {
               array.getJSONObject(0).getString("username")
       );
       return user;
-
     } catch (JSONException e) {
       e.printStackTrace();
     }

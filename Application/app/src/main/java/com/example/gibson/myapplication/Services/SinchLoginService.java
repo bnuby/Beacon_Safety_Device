@@ -107,7 +107,6 @@ public class SinchLoginService extends Service {
       return sinchClient.getAudioController();
     }
 
-
   }
 
 }

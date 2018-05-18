@@ -75,6 +75,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   @Override
   public void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    callerId = MainActivity.getDatabaseService().getUser().callerID;
     requestPermission();
     contacts = new ArrayList<>();
     getActivity().bindService(new Intent(getContext(), SinchLoginService.class),connection, Context.BIND_AUTO_CREATE);
@@ -147,10 +148,10 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-      Toast.makeText(getContext(), strings.get(position), Toast.LENGTH_SHORT).show();
-      Call call = sinchBinder.callUserVideo(strings.get(position));
+
+      Call call = sinchBinder.callUserVideo(contacts.get(position).recipientID);
       Intent callingact = new Intent(getContext(),CallingActivity.class);
-      callingact.putExtra("recipientId",strings.get(position));
+      callingact.putExtra("recipientId",call.getCallId());
       startActivity(callingact);
     }
   };

@@ -35,20 +35,6 @@ public class ListenArmService extends Service {
     });
     t.start();
 
-
-//    Timer timer = new Timer();
-//    timer.scheduleAtFixedRate(
-//            new TimerTask() {
-//              @Override
-//              public void run() {
-//                Log.v("Service", "123");
-//
-//              }
-//            },
-//            2000,
-//            1000
-//    );
-
     return binder;
   }
 

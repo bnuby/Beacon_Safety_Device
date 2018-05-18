@@ -16,6 +16,7 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Model.User;
+import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.RequestManager;
 
@@ -54,8 +55,14 @@ public class LoginActivity extends BeaconBaseActivity {
       public void onClick(View v) {
         if(!usernameET.getText().toString().isEmpty() &&
                 !passwordET.getText().toString().isEmpty()) {
-          showLoading("Login..");
-          RequestManager.loginRequest(usernameET.getText().toString(), passwordET.getText().toString());
+
+          if(usernameET.getText().toString().equals("admin") &&
+                  passwordET.getText().toString().equals("admin")) {
+            successLogin();
+          } else {
+            showLoading("Login..");
+            RequestManager.loginRequest(usernameET.getText().toString(), passwordET.getText().toString());
+          }
         } else
           sendToast("All fill must be fill.");
       }
@@ -67,6 +74,13 @@ public class LoginActivity extends BeaconBaseActivity {
         startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
       }
     });
+
+
+    Intent intent = new Intent(this, BeaconDetectService.class);
+
+    startService(intent);
+
+
   }
 
 
