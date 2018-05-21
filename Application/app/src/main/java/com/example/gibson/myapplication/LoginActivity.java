@@ -19,6 +19,7 @@ import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.RequestManager;
+import com.example.gibson.myapplication.Services.SinchLoginService;
 
 public class LoginActivity extends BeaconBaseActivity {
 
@@ -27,6 +28,7 @@ public class LoginActivity extends BeaconBaseActivity {
   EditText passwordET;
   Button loginBtn;
   Button registerBtn;
+  Intent SinchLoginIntent;
 
   public static RequestQueue getQueue() {
     return queue;
@@ -50,6 +52,7 @@ public class LoginActivity extends BeaconBaseActivity {
     queue.start();
 
 
+
     loginBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -62,7 +65,10 @@ public class LoginActivity extends BeaconBaseActivity {
           } else {
             showLoading("Login..");
             RequestManager.loginRequest(usernameET.getText().toString(), passwordET.getText().toString());
+
+
           }
+
         } else
           sendToast("All fill must be fill.");
       }
@@ -78,16 +84,19 @@ public class LoginActivity extends BeaconBaseActivity {
 
     Intent intent = new Intent(this, BeaconDetectService.class);
 
+
     startService(intent);
-
-
   }
 
+  public static void startSinch(String userName){
+    Intent sinchLoginIntent =new Intent(mContext,SinchLoginService.class);
+    sinchLoginIntent.putExtra("callerId",userName);
+    mContext.startService(sinchLoginIntent);
+  }
 
 
   public void tryLogin() {
     DatabaseService databaseService = new DatabaseService(this);
-
     User user = databaseService.getUser();
 
     if(user != null) {

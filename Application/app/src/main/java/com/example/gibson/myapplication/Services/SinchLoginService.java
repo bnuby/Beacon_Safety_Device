@@ -6,8 +6,10 @@ import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.gibson.myapplication.CallingActivity;
+import com.example.gibson.myapplication.MainActivity;
 import com.sinch.android.rtc.AudioController;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
@@ -19,7 +21,10 @@ import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
 
+import java.util.concurrent.ExecutionException;
+
 public class SinchLoginService extends Service {
+
 
   private static final String APP_KEY = "dd3452d3-6c1a-4f37-8deb-1c9878eb6831";
   private static final String APP_SECRET = "lxj2OtDCnE2eA3LgY7ur7g==";
@@ -31,6 +36,19 @@ public class SinchLoginService extends Service {
   private String callerId;
   private String recipientId;
   private  SinchBinder sinchBinder = new SinchBinder();
+
+  @Override
+  public int onStartCommand(Intent intent, int flags, int startId) {
+    try{
+      start(intent.getStringExtra("callerId"));
+    }catch (Exception e){
+      Log.i(TAG, "onStartCommand: fail");
+    }
+
+//    return super.onStartCommand(intent, flags, startId);
+    return START_STICKY;
+  }
+
 
   private void start(String callerId) {{
     sinchClient = Sinch.getSinchClientBuilder()
@@ -53,7 +71,7 @@ public class SinchLoginService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
-    Log.i("111", "onCreate: ");
+    Log.i(TAG, "onCreate: ");
   }
 
   @Nullable
@@ -68,6 +86,7 @@ public class SinchLoginService extends Service {
     public void onIncomingCall(CallClient callClient, Call call) {
       Intent intent = new Intent(SinchLoginService.this, CallingActivity.class);
       intent.putExtra("recipientId", call.getCallId());
+      intent.putExtra("fromImcomming",true);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
       SinchLoginService.this.startActivity(intent);
     }
@@ -106,6 +125,7 @@ public class SinchLoginService extends Service {
       }
       return sinchClient.getAudioController();
     }
+
 
   }
 

@@ -58,7 +58,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     public void onServiceConnected(ComponentName name, IBinder service) {
       sinchBinder = (SinchLoginService.SinchBinder)service;
       Log.i(TAG, "onServiceConnected: ");
-      sinchBinder.startClient(callerId);
     }
 
     @Override

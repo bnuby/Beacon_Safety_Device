@@ -1,5 +1,6 @@
 package com.example.gibson.myapplication.Services;
 
+import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -26,7 +27,7 @@ import java.util.Map;
 
 public class RequestManager {
 
-  static String host = "http://192.168.43.250:5000";
+  static String host = "http://192.168.0.107:5000";
 
   public static boolean loginRequest(final String username, final String password) {
 
@@ -65,6 +66,7 @@ public class RequestManager {
                             email,
                             callerID
                     );
+                    LoginActivity.startSinch(username);
                     LoginActivity.successLogin();
                   } else if (status == 404) {
                     LoginActivity.sendToast("Invalid Username Or Password.");
