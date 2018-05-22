@@ -1,8 +1,11 @@
 package com.example.gibson.myapplication;
 
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -77,6 +80,7 @@ public class RegisterActivity extends BeaconBaseActivity {
     });
   }
 
+
   public static void dissmissLoading(int status) {
     dialog.dismiss();
     if (status == 201) {
@@ -89,6 +93,8 @@ public class RegisterActivity extends BeaconBaseActivity {
     }
     sendToast("Request Error Please Try Again.");
   }
+
+
 
   @Override
   protected void onPause() {

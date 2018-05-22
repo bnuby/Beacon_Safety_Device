@@ -1,4 +1,4 @@
-package com.example.gibson.myapplication;
+package com.example.gibson.myapplication.Fragment;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -23,7 +23,11 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.gibson.myapplication.CallingActivity;
+import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Contact;
+import com.example.gibson.myapplication.R;
 import com.example.gibson.myapplication.Services.RequestManager;
 import com.example.gibson.myapplication.Services.SinchLoginService;
 import com.sinch.android.rtc.calling.Call;
@@ -43,9 +47,18 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   ArrayList<String> strings = new ArrayList<>();
   static ArrayList<Contact> contacts;
   private Button addBtn;
-  private  SinchLoginService.SinchBinder sinchBinder;
+  private static SinchLoginService.SinchBinder sinchBinder;
 
   private static ContactFragment contactFragment;
+
+
+  AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+      Toast.makeText(getContext(), "asd", Toast.LENGTH_LONG).show();
+      callUser(getContext(), contacts.get(position).recipientID );
+    }
+  };
 
   public static ContactFragment getFragment() {
     if (contactFragment == null)
@@ -110,8 +123,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           public void onClick(View v) {
             String name = nameET.getText().toString();
             String recipientID = usernameET.getText().toString();
-//            MainActivity.getDatabaseService().insertContact(name, recipientID);
-            Toast.makeText(getContext(), "add", Toast.LENGTH_SHORT).show();
             RequestManager.registerContact(MainActivity.user,
                     new Contact(name, recipientID));
             dialog.dismiss();
@@ -133,7 +144,10 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     ContactAdapter adapter = new ContactAdapter();
     listView.setAdapter(adapter);
     listView.setOnItemClickListener(itemClickListener);
-    update_contact_list();
+//    update_contact_list();
+
+    RequestManager.getContact(MainActivity.user);
+
 
     return view;
   }
@@ -144,16 +158,12 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     listView.invalidateViews();
   }
 
-  AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-      Call call = sinchBinder.callUserVideo(contacts.get(position).recipientID);
-      Intent callingact = new Intent(getContext(),CallingActivity.class);
-      callingact.putExtra("recipientId",call.getCallId());
-      startActivity(callingact);
-    }
-  };
+  public static void callUser(Context mContext, String user) {
+    Call call = sinchBinder.callUserVideo(user);
+    Intent callingact = new Intent(mContext,CallingActivity.class);
+    callingact.putExtra("recipientId",call.getCallId());
+    mContext.startActivity(callingact);
+  }
 
 
 

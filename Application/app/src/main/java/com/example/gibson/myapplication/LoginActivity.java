@@ -16,7 +16,6 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Model.User;
-import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.RequestManager;
 import com.example.gibson.myapplication.Services.SinchLoginService;
@@ -80,13 +79,11 @@ public class LoginActivity extends BeaconBaseActivity {
         startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
       }
     });
-
-
-    Intent intent = new Intent(this, BeaconDetectService.class);
-
-
-    startService(intent);
   }
+
+
+
+
 
   public static void startSinch(String userName){
     Intent sinchLoginIntent =new Intent(mContext,SinchLoginService.class);

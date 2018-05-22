@@ -1,4 +1,4 @@
-package com.example.gibson.myapplication;
+package com.example.gibson.myapplication.Fragment;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -21,7 +21,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
+import com.example.gibson.myapplication.R;
 import com.example.gibson.myapplication.Services.RequestManager;
 
 import java.util.ArrayList;

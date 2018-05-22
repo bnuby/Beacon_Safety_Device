@@ -1,6 +1,7 @@
-package com.example.gibson.myapplication;
+package com.example.gibson.myapplication.Fragment;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -10,6 +11,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gibson.myapplication.MainActivity;
+import com.example.gibson.myapplication.R;
+import com.example.gibson.myapplication.ReceiveBeaconActivity;
 import com.example.gibson.myapplication.Services.RequestManager;
 
 public class AccountFragment extends Fragment {
@@ -51,6 +55,15 @@ public class AccountFragment extends Fragment {
         MainActivity.getDatabaseService().logout();
         ((Activity) getContext()).finish();
         Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
+      }
+    });
+
+    receiveBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(getContext(), ReceiveBeaconActivity.class);
+
+        startActivity(intent);
       }
     });
     // Inflate the layout for this fragment

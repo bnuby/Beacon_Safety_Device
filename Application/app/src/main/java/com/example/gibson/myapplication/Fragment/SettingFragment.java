@@ -1,4 +1,4 @@
-package com.example.gibson.myapplication;
+package com.example.gibson.myapplication.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +13,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.gibson.myapplication.MainActivity;
+import com.example.gibson.myapplication.R;
+import com.example.gibson.myapplication.RegisterActivity;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
 import com.example.gibson.myapplication.Services.RequestManager;

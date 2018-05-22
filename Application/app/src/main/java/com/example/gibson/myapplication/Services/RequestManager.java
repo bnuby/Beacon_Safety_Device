@@ -1,6 +1,5 @@
 package com.example.gibson.myapplication.Services;
 
-import android.content.Intent;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -8,8 +7,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.gibson.myapplication.BeaconFragment;
-import com.example.gibson.myapplication.ContactFragment;
+import com.example.gibson.myapplication.Fragment.BeaconFragment;
+import com.example.gibson.myapplication.Fragment.ContactFragment;
 import com.example.gibson.myapplication.LoginActivity;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
@@ -67,6 +66,7 @@ public class RequestManager {
                             callerID
                     );
                     LoginActivity.startSinch(username);
+
                     LoginActivity.successLogin();
                   } else if (status == 404) {
                     LoginActivity.sendToast("Invalid Username Or Password.");
@@ -344,16 +344,16 @@ public class RequestManager {
   }
 
   public static boolean deleteBeaconData(final User user, final Beacon beacon) {
-    String url = host + "/beacon";
+    String url = host + "/beacon/delete";
     StringRequest request = new StringRequest(
-            Request.Method.DELETE,
+            Request.Method.POST,
             url,
             new Response.Listener<String>() {
               @Override
               public void onResponse(String response) {
                 try {
                   JSONObject object = new JSONObject(response);
-                  if (object.getInt("sttus") == 400)
+                  if (object.getInt("status") == 400)
                     MainActivity.sendToast("Delete Failed" + object.getString("msg"));
 
                   MainActivity.sendToast("Delete Sucess");
@@ -371,25 +371,16 @@ public class RequestManager {
               }
             }
     ) {
-//      @Override
-//      protected Map<String, String> getParams() throws AuthFailureError {
-//        Map<String, String> post = new HashMap<>();
-//        post.put("username", user.username);
-//        post.put("mac", beacon.MAC);
-//        return post;
-//      }
-
-
       @Override
-      public byte[] getBody() throws AuthFailureError {
+      protected Map<String, String> getParams() throws AuthFailureError {
         Map<String, String> post = new HashMap<>();
         post.put("username", user.username);
         post.put("mac", beacon.MAC);
-        return post.toString().getBytes();
+        return post;
       }
+
     };
     MainActivity.getQueue().add(request);
-
     return true;
   }
 
@@ -406,7 +397,8 @@ public class RequestManager {
                 try {
                   JSONObject object = new JSONObject(response);
                   if(object.getInt("status") == 400) {
-                    MainActivity.sendToast("Add Fail");
+                    MainActivity.dismissLoading();
+                    MainActivity.sendToast(object.getString("msg"));
                     return;
                   }
                   MainActivity.getDatabaseService().insertContact(contact.name, contact.recipientID);
@@ -487,11 +479,11 @@ public class RequestManager {
     return true;
   }
 
-  public static boolean deleteContact(User user, final Contact contact) {
+  public static boolean deleteContact(final User user, final Contact contact) {
     String url = host + "/contact";
     MainActivity.showLoading("Deleting Contact..");
     StringRequest request = new StringRequest(
-            Request.Method.DELETE,
+            Request.Method.PUT,
             url,
             new Response.Listener<String>() {
               @Override
@@ -503,7 +495,7 @@ public class RequestManager {
                     return;
                   }
                   MainActivity.getDatabaseService().deleteContact(contact.name, contact.recipientID);
-
+                  ContactFragment.update_contact_list();
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
@@ -517,7 +509,15 @@ public class RequestManager {
                 MainActivity.dismissLoading();
               }
             }
-    );
+    ) {
+      @Override
+      protected Map<String, String> getParams() throws AuthFailureError {
+        Map<String, String> post = new HashMap<>();
+        post.put("username", user.username);
+        post.put("recipientID", contact.recipientID);
+        return post;
+      }
+    };
 
     MainActivity.getQueue().add(request);
     MainActivity.sendToast("Pending Delete Request");
@@ -525,8 +525,89 @@ public class RequestManager {
   }
 
 
-  public static boolean armAlarm(User user) {
+  public static boolean armAlarm(User user, final String status) {
+    String url = host + "/arduino";
+    StringRequest request = new StringRequest(
+            Request.Method.PUT,
+            url,
+            new Response.Listener<String>() {
+              @Override
+              public void onResponse(String response) {
 
+              }
+            },
+            new Response.ErrorListener() {
+              @Override
+              public void onErrorResponse(VolleyError error) {
+
+              }
+            }
+    ) {
+      @Override
+      protected Map<String, String> getParams() throws AuthFailureError {
+        Map<String, String> post = new HashMap<>();
+        post.put("status", status);
+        return post;
+      }
+    };
+    BeaconDetectService.queue.add(request);
+    return true;
+  }
+
+  public static boolean sendUsername(final User user) {
+    String url = host + "/arduino";
+
+    StringRequest request = new StringRequest(
+            Request.Method.POST,
+            url,
+            new Response.Listener<String>() {
+              @Override
+              public void onResponse(String response) {
+
+              }
+            },
+            new Response.ErrorListener() {
+              @Override
+              public void onErrorResponse(VolleyError error) {
+
+              }
+            }
+    ) {
+      @Override
+      protected Map<String, String> getParams() throws AuthFailureError {
+        Map<String, String> post = new HashMap<>();
+
+        post.put("username", user.username);
+
+        return post;
+      }
+    };
+
+    BeaconDetectService.queue.add(request);
+
+    return true;
+  }
+
+  public static boolean getArduinoStatus(User user, final String status) {
+    String url = host + "/arduino/" + user.username;
+    StringRequest request = new StringRequest(
+            Request.Method.PUT,
+            url,
+            new Response.Listener<String>() {
+              @Override
+              public void onResponse(String response) {
+
+              }
+            },
+            new Response.ErrorListener() {
+              @Override
+              public void onErrorResponse(VolleyError error) {
+
+              }
+            }
+    );
+
+    MainActivity.getQueue().add(request);
     return true;
   }
 }

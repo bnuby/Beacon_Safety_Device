@@ -127,9 +127,9 @@ public class CallingActivity extends AppCompatActivity {
                     AudioManager.FLAG_ALLOW_RINGER_MODES);
 //            ringtoneManager.setType(RingtoneManager.TYPE_RINGTONE);
 
-            Ringtone ringtone=RingtoneManager.getRingtone(getBaseContext(), notification);
-            ringtone.play();
+            ringtone = RingtoneManager.getRingtone(getBaseContext(), notification);
 
+            ringtone.play();
 
             Log.i(TAG, "onCreate: Incom");
             button.setText("hang on");
@@ -188,12 +188,6 @@ public class CallingActivity extends AppCompatActivity {
         @Override
         public void onCallEstablished(Call establishedCall) {
             Log.i(TAG, "onCallEstablished");
-            try{
-                vibrator.cancel();
-                ringtone.stop();
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
             button.setText("hangup");
             audioManager.setMicrophoneMute(false);
             audioManager.setSpeakerphoneOn(true);

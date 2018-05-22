@@ -1,4 +1,4 @@
-package com.example.gibson.myapplication;
+package com.example.gibson.myapplication.Fragment;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -19,7 +19,10 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
+import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
+import com.example.gibson.myapplication.R;
+import com.example.gibson.myapplication.Services.RequestManager;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -32,15 +35,12 @@ import java.util.concurrent.TimeUnit;
 public class MainPageFragment extends Fragment implements View.OnClickListener {
 
   private View _instance;
-  public static final int BluetoothRequestCode = 2;
-  public BluetoothAdapter mBluetoothAdapter;
-  public BluetoothLeScanner mBluetoothLeScanner;
   ScheduledExecutorService checkLocation;
 
 //  private MQTT_SERVICE mqtt_service;
 
 //  TextView mqttStatusTV;
-  ListView listView;
+  static ListView listView;
 //  JSONArray beaconArray;
   ArrayList<Beacon> beacons;
   ArrayList<HashMap<String,Object>> beaconList;
@@ -54,29 +54,11 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
     return mainPageFragment;
   }
 
-  protected ScanCallback mScanCallback = new ScanCallback() {
-    @Override
-    public void onScanResult(int callbackType, ScanResult result) {
-      ScanRecord mScanRecord = result.getScanRecord();
-      byte[] manufacturerData = mScanRecord.getManufacturerSpecificData(224);
-      int mRssi = result.getRssi();
-      int txPower = result.getScanRecord().getTxPowerLevel();
-//      if(result.getDevice().getAddress().equalsIgnoreCase(getMacAddress(macET))) {
-//        statusTV.setText("yes");
-//        rssiTV.setText(String.valueOf(mRssi));
-//        txPowerTV.setText(String.valueOf(txPower));
-//        accuracyTV.setText(String.valueOf(calculateAccuracy(txPower, mRssi)));
-//        distanceTV.setText(String.valueOf(calculateDistance(txPower, mRssi)));
-//      }
-      for(HashMap<String, Object> i : beaconList) {
-        if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
-          i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
-        }
-      }
-      listView.invalidateViews();
 
-    }
-  };
+  public static void reloadListView() {
+    listView.invalidateViews();
+
+  }
 
   public static byte[] getIdAsByte(java.util.UUID uuid) {
     ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
@@ -99,19 +81,13 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
         if (ContextCompat.checkSelfPermission(rootview.getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-          requestBluetoothScan();
           checkLocation.shutdown();
         }
       }
     }, 0, 4000, TimeUnit.MILLISECONDS);
 
     Executors.newScheduledThreadPool(1);
-    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    if (mBluetoothAdapter != null) {
-      if (!mBluetoothAdapter.isEnabled()) {
-        startActivityForResult(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE), BluetoothRequestCode);
-      }
-    }
+
     // MQTT SERVICE
 //    mqtt_service.setStatusTextView(mqttStatusTV);
 //    mqtt_service.startConnect();
@@ -119,13 +95,6 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
     // Bluetooth Get Adapter
 
     return rootview;
-  }
-
-
-
-  void requestBluetoothScan() {
-    mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-    mBluetoothLeScanner.startScan(mScanCallback);
   }
 
   void initialize(ViewGroup group) {
@@ -146,19 +115,6 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
     beacons = MainActivity.getDatabaseService().getBeacons();
     beaconList = new ArrayList<>();
 
-//    for (int i = 0; i < beaconArray.length(); i++) {
-//      try {
-//        JSONObject obj = beaconArray.getJSONObject(i);
-//        HashMap<String, Object> dict = new HashMap();
-//        dict.put("name",obj.getString("name"));
-//        dict.put("mac",obj.getString("mac"));
-//        dict.put("distance",0);
-//
-//        beaconList.add(dict);
-//      } catch (JSONException e) {
-//        e.printStackTrace();
-//      }
-//    }
     for (int i = 0; i < beacons.size(); i++) {
         Beacon beacon = beacons.get(i);
         HashMap<String, Object> dict = new HashMap();
@@ -183,40 +139,6 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
       Log.v(name, text);
     } else {
       Log.v(name, "none");
-    }
-  }
-
-  public double calculateAccuracy(int txPower, double rssi) {
-    if (rssi == 0) {
-      return -1.0; // if we cannot determine accuracy, return -1.
-    }
-    double ratio = rssi * 1.0 / txPower;
-    if (ratio < 1.0) {
-      return Math.pow(ratio, 10);
-    } else {
-      double accuracy = (0.89976) * Math.pow(ratio, 7.7095) + 0.111;
-      return accuracy;
-    }
-  }
-
-  public double calculateDistance(int txPower, double rssi) {
-    Log.v("TXPOWER", String.valueOf(txPower));
-    Log.v("RSSI", String.valueOf(rssi));
-    double iRssi = Math.abs(rssi);
-//    double power = (iRssi - 59) / (15 * 2.0);
-//    return Math.pow(10, power);
-    return (1.12900922 * Math.pow(10, -13) * Math.pow(iRssi, 7.068735405));
-  }
-
-  private String getDistance(Double accuracy) {
-    if (accuracy == -1.0) {
-      return "Unknown";
-    } else if (accuracy < 1) {
-      return "Immediate";
-    } else if (accuracy < 3) {
-      return "Near";
-    } else {
-      return "Far";
     }
   }
 

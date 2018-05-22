@@ -2,14 +2,11 @@ package com.example.gibson.myapplication;
 
 import android.Manifest;
 import android.app.AlertDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
@@ -33,8 +30,12 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
+import com.example.gibson.myapplication.Fragment.AccountFragment;
+import com.example.gibson.myapplication.Fragment.BeaconFragment;
+import com.example.gibson.myapplication.Fragment.ContactFragment;
+import com.example.gibson.myapplication.Fragment.MainPageFragment;
+import com.example.gibson.myapplication.Fragment.SettingFragment;
 import com.example.gibson.myapplication.Model.User;
-import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.ListenArmService;
 import com.example.gibson.myapplication.Services.MQTT_SERVICE;
@@ -42,9 +43,6 @@ import com.example.gibson.myapplication.Services.MQTT_SERVICE;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import static com.example.gibson.myapplication.MainPageFragment.BluetoothRequestCode;
-
 /**
  * Created by gibson on 20/03/2018.
  */
@@ -52,6 +50,7 @@ import static com.example.gibson.myapplication.MainPageFragment.BluetoothRequest
 public class MainActivity extends BeaconBaseActivity {
 
   private final int NUM_PAGES = 4;
+  public static final int BluetoothRequestCode = 2;
   public static User user;
   public static MQTT_SERVICE mqtt_service;
   private static DatabaseService databaseService;
@@ -79,17 +78,35 @@ public class MainActivity extends BeaconBaseActivity {
                     Manifest.permission.ACCESS_COARSE_LOCATION)
                     == PackageManager.PERMISSION_DENIED) {
       Log.v("request", "permission");
-      if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M)
-        requestPermissions(
-                new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                BluetoothRequestCode);
 
     }
 
     MainActivity.user = DatabaseService.getDatabaseService().getUser();
     init();
 
+    allowPermission();
+
     Intent intent = new Intent(this, ListenArmService.class);
+
+  }
+
+
+  void allowPermission() {
+    if(Build.VERSION.SDK_INT == Build.VERSION_CODES.M)
+      requestPermissions(
+              new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+              BluetoothRequestCode);
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+      requestPermissions(new String[]{
+              Manifest.permission.ACCESS_FINE_LOCATION,
+              Manifest.permission.ACCESS_COARSE_LOCATION,
+              Manifest.permission.RECORD_AUDIO,
+              Manifest.permission.CAMERA,
+              Manifest.permission.ACCESS_NETWORK_STATE,
+              Manifest.permission.READ_PHONE_STATE
+      },100);
+    }
 
   }
 
@@ -124,7 +141,6 @@ public class MainActivity extends BeaconBaseActivity {
       TabLayout.Tab tab = tabLayout.getTabAt(i);
       tab.setCustomView(pagerAdapter.getTabView(i));
     }
-
     // Initial Cache
     Cache cache = new DiskBasedCache(getCacheDir(), 1024 * 1024);
 
@@ -209,13 +225,12 @@ public class MainActivity extends BeaconBaseActivity {
   @Override
   protected void onResume() {
     super.onResume();
-    requestQueue.start();
   }
 
   @Override
   protected void onPause() {
     super.onPause();
-    requestQueue.stop();
+//    requestQueue.stop();
   }
 
   // Custom View Pager Adapter
@@ -268,15 +283,4 @@ public class MainActivity extends BeaconBaseActivity {
     }
 
   }
-
-  class MyServiceConn implements ServiceConnection {
-    public void onServiceConnected(ComponentName classname,
-                                   IBinder service) {
-      Log.d("LINCYU", "Activity: onServiceConnected");
-    }
-
-    public void onServiceDisconnected(ComponentName classname) {
-    }
-  }
-
 }

@@ -39,9 +39,6 @@ public class ContactActivity extends Fragment implements View.OnClickListener{
 
 
 //    setContentView(R.layout.activity_calling);
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-      requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.CAMERA, Manifest.permission.ACCESS_NETWORK_STATE, Manifest.permission.READ_PHONE_STATE},100);
-    }
 //    Intent intent = getActivity().getIntent();
 //    callerId = intent.getStringExtra("callerId");
 //    recipientId = intent.getStringExtra("recipientId");

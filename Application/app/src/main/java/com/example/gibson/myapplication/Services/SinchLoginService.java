@@ -22,6 +22,8 @@ import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
 
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class SinchLoginService extends Service {
 
@@ -35,18 +37,29 @@ public class SinchLoginService extends Service {
   private SinchClient sinchClient;
   private String callerId;
   private String recipientId;
+  static String user;
   private  SinchBinder sinchBinder = new SinchBinder();
 
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     try{
-      start(intent.getStringExtra("callerId"));
+      user = intent.getStringExtra("callerId");
+
+      start(user);
     }catch (Exception e){
       Log.i(TAG, "onStartCommand: fail");
     }
 
+    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
+            new Runnable() {
+              @Override
+              public void run() {
+                Log.v(TAG, "background");
+              }
+            }, 1000, 1000, TimeUnit.MILLISECONDS);
+
 //    return super.onStartCommand(intent, flags, startId);
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
 
