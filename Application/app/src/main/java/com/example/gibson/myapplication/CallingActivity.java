@@ -149,6 +149,8 @@ public class CallingActivity extends AppCompatActivity {
                         finish();
                     }
                     if (call.getState() == CallState.INITIATING) {
+                        vibrator.cancel();
+                        ringtone.stop();
                         call.answer();
                     }
                 }
@@ -197,6 +199,7 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onCallProgressing(Call progressingCall) {
+
         }
 
         @Override

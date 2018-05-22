@@ -59,7 +59,7 @@ public class SinchLoginService extends Service {
             }, 1000, 1000, TimeUnit.MILLISECONDS);
 
 //    return super.onStartCommand(intent, flags, startId);
-    return START_REDELIVER_INTENT;
+    return START_STICKY;
   }
 
 
