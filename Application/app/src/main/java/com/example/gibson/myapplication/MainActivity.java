@@ -283,4 +283,9 @@ public class MainActivity extends BeaconBaseActivity {
     }
 
   }
+
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+  }
 }

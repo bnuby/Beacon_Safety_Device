@@ -184,7 +184,8 @@ public class CallingActivity extends AppCompatActivity {
                 call.hangup();
                 Log.i(TAG, "onCallEnded: hangup");
             }
-            finish();
+//            finish();
+            startActivity(new Intent(getBaseContext(), MainActivity.class));
         }
 
         @Override
