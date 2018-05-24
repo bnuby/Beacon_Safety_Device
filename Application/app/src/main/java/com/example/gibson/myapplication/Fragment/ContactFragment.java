@@ -162,6 +162,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     Call call = sinchBinder.callUserVideo(user);
     Intent callingact = new Intent(mContext,CallingActivity.class);
     callingact.putExtra("recipientId",call.getCallId());
+    callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     mContext.startActivity(callingact);
   }
 
