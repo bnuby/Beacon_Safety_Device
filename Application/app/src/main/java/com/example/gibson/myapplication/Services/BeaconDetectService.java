@@ -64,10 +64,10 @@ public class BeaconDetectService extends Service {
 
           Log.v("test", "" + calculateDistance(txPower, mRssi));
           if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
-            ContactFragment.callUser(getBaseContext(), user);
+            ContactFragment.callUser(getApplicationContext(), user);
             RequestManager.armAlarm(MainActivity.user,"danger");
           } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
-            ContactFragment.callUser(getBaseContext(), user);
+            ContactFragment.callUser(getApplicationContext(), user);
             RequestManager.armAlarm(MainActivity.user,"warning");
           } else {
             RequestManager.armAlarm(MainActivity.user,"safe");

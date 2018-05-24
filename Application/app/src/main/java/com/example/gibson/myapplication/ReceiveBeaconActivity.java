@@ -27,6 +27,20 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   Intent intent;
   public BluetoothAdapter mBluetoothAdapter;
   public static final int BluetoothRequestCode = 2;
+
+  @Override
+  protected void onResume() {
+    checkBluetooth();
+    startBeaconReceive();
+    super.onResume();
+  }
+
+  @Override
+  protected void onPause() {
+    stopService(new Intent(ReceiveBeaconActivity.this, BeaconDetectService.class));
+    super.onPause();
+  }
+
   static MediaStore.Audio.Media media;
 
 
@@ -49,7 +63,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
 
 
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    checkBluetooth();
+
   }
 
 
