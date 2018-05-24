@@ -52,9 +52,8 @@ public class AccountFragment extends Fragment {
       @Override
       public void onClick(View v) {
         RequestManager.logoutRequest();
-        MainActivity.getDatabaseService().logout();
         ((Activity) getContext()).finish();
-        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
       }
     });
 

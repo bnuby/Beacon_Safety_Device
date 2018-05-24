@@ -26,7 +26,7 @@ import java.util.Map;
 
 public class RequestManager {
 
-  static String host = "http://192.168.43.250:5000";
+  static String host = "http://182.155.208.64:5000";
 
   public static boolean loginRequest(final String username, final String password) {
 
@@ -97,7 +97,7 @@ public class RequestManager {
     };
     LoginActivity.getQueue().add(request);
 
-    LoginActivity.sendToast("Sending Login Request");
+//    LoginActivity.sendToast("Sending Login Request");
 
     return true;
   }
@@ -116,9 +116,10 @@ public class RequestManager {
                     int status = new JSONObject(response).getInt("status");
                     if (status == 200)
                       Log.v("Logout", "Success");
+                    MainActivity.getDatabaseService().logout();
                     MainActivity.dismissLoading();
                   } catch (JSONException e) {
-                    MainActivity.sendToast("Login Fail");
+                    MainActivity.sendToast("Logout Fail");
                     MainActivity.dismissLoading();
                     e.printStackTrace();
                   }
@@ -195,7 +196,7 @@ public class RequestManager {
 
 
     RegisterActivity.queue.add(request);
-    RegisterActivity.sendToast("Sending Register Request");
+//    RegisterActivity.sendToast("Sending Register Request");
 
     return true;
   }
@@ -520,7 +521,7 @@ public class RequestManager {
     };
 
     MainActivity.getQueue().add(request);
-    MainActivity.sendToast("Pending Delete Request");
+//    MainActivity.sendToast("Pending Delete Request");
     return true;
   }
 
