@@ -176,12 +176,11 @@ public class CallingActivity extends AppCompatActivity {
 //            call = null;
 //            SinchError a = endedCall.getDetails().getError();
 //            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-            try{
-                vibrator.cancel();
+
+            vibrator.cancel();
+
+            if(ringtone != null && ringtone.isPlaying())
                 ringtone.stop();
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
             if (call != null) {
                 if(localView!=null &&view!=null){
                     localView.removeAllViews();

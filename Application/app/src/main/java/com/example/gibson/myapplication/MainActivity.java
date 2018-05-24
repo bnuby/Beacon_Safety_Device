@@ -58,6 +58,8 @@ public class MainActivity extends BeaconBaseActivity {
   private ViewPagerAdapter pagerAdapter;
   private TabLayout tabLayout;
   static RequestQueue requestQueue;
+  public static boolean receivedMode;
+
 
   public static RequestQueue getQueue() { return requestQueue; }
 
@@ -150,7 +152,7 @@ public class MainActivity extends BeaconBaseActivity {
     requestQueue = new RequestQueue(cache, network);
     requestQueue.start();
 
-
+    receivedMode = false;
   }
 
   @Override

@@ -58,10 +58,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
         finish();
       }
     });
-
     startBeaconReceive();
-
-
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
   }
@@ -92,4 +89,9 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     startService(intent);
   }
 
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    MainActivity.receivedMode = false;
+  }
 }
