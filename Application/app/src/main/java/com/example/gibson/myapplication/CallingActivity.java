@@ -109,6 +109,7 @@ public class CallingActivity extends AppCompatActivity {
         Log.i(TAG, "onCreate: " + recipientId);
         button = (Button) findViewById(R.id.hangup);
 
+        bindService(new Intent(this, SinchLoginService.class), connection, BIND_AUTO_CREATE);
         audioManager = (AudioManager) getApplication().getSystemService(Context.AUDIO_SERVICE);
 //        RingtoneManager ringtoneManager = new RingtoneManager(this);
 
@@ -134,7 +135,7 @@ public class CallingActivity extends AppCompatActivity {
             Log.i(TAG, "onCreate: Incom");
             button.setText("hang on");
         }
-        bindService(new Intent(this, SinchLoginService.class), connection, BIND_AUTO_CREATE);
+
 
 
 
@@ -160,6 +161,7 @@ public class CallingActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
+        call.hangup();
         unbindService(connection);
         super.onDestroy();
     }
@@ -184,7 +186,8 @@ public class CallingActivity extends AppCompatActivity {
                 call.hangup();
                 Log.i(TAG, "onCallEnded: hangup");
             }
-            finish();
+//            finish();
+            startActivity(new Intent(getBaseContext(), MainActivity.class));
         }
 
         @Override

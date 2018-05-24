@@ -1,6 +1,7 @@
 package com.example.gibson.myapplication.Services;
 
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
@@ -10,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.gibson.myapplication.CallingActivity;
 import com.example.gibson.myapplication.MainActivity;
+import com.example.gibson.myapplication.Model.User;
 import com.sinch.android.rtc.AudioController;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
@@ -43,23 +45,21 @@ public class SinchLoginService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     try{
-      user = intent.getStringExtra("callerId");
 
+      user = intent.getStringExtra("callerId");
+      Log.i(TAG, user);
       start(user);
+      Log.i(TAG, user);
     }catch (Exception e){
-      Log.i(TAG, "onStartCommand: fail");
+
+      DatabaseService databaseService = new DatabaseService(this);
+      String user = databaseService.getUser().username;
+      start(user);
     }
 
-    Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(
-            new Runnable() {
-              @Override
-              public void run() {
-                Log.v(TAG, "background");
-              }
-            }, 1000, 1000, TimeUnit.MILLISECONDS);
 
 //    return super.onStartCommand(intent, flags, startId);
-    return START_STICKY;
+    return START_REDELIVER_INTENT;
   }
 
 
@@ -75,7 +75,7 @@ public class SinchLoginService extends Service {
     sinchClient.setSupportCalling(true);
     sinchClient.startListeningOnActiveConnection();
     sinchClient.start();
-    Log.i(TAG, "start: ");
+    Log.i(TAG, "start: ");  
     sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
 
   }
@@ -97,10 +97,12 @@ public class SinchLoginService extends Service {
 
     @Override
     public void onIncomingCall(CallClient callClient, Call call) {
-      Intent intent = new Intent(SinchLoginService.this, CallingActivity.class);
+      Intent intent = new Intent(getBaseContext(), CallingActivity.class);
+//      Intent intent = new Intent();
       intent.putExtra("recipientId", call.getCallId());
       intent.putExtra("fromImcomming",true);
-      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
+//      intent.setComponent(new ComponentName(getApplicationContext().getPackageName(), CallingActivity.class.getName()));
       SinchLoginService.this.startActivity(intent);
     }
   }
