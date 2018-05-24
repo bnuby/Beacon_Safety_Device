@@ -56,10 +56,10 @@ public class SinchLoginService extends Service {
       String user = databaseService.getUser().username;
       start(user);
     }
-    
+
 
 //    return super.onStartCommand(intent, flags, startId);
-    return START_REDELIVER_INTENT;
+    return START_STICKY;
   }
 
 
