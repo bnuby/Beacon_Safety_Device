@@ -195,6 +195,12 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onCallEstablished(Call establishedCall) {
+            try{
+                vibrator.cancel();
+                ringtone.stop();
+            }catch (Exception e){
+                Log.i(TAG, "onCallEstablished: cannot cancel vibrate");
+            }
             Log.i(TAG, "onCallEstablished");
             button.setText("hangup");
             audioManager.setMicrophoneMute(false);
