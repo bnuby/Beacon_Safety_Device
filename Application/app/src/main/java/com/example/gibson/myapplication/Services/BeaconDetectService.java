@@ -179,6 +179,8 @@ public class BeaconDetectService extends Service {
     }
   }
 
+
+
   @Override
   public void onDestroy() {
     mBluetoothLeScanner.stopScan(mScanCallback);

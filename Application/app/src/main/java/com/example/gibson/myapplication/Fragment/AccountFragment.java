@@ -1,6 +1,7 @@
 package com.example.gibson.myapplication.Fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,7 +24,7 @@ public class AccountFragment extends Fragment {
   TextView callerIDTV;
   Button receiveBtn;
   Button logoutBtn;
-  boolean bool = true;
+  static Context mContext;
   static View accountView;
 
   private static AccountFragment accountFragment;
@@ -52,7 +53,6 @@ public class AccountFragment extends Fragment {
       @Override
       public void onClick(View v) {
         RequestManager.logoutRequest();
-        ((Activity) getContext()).finish();
 //        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
       }
     });
@@ -67,6 +67,10 @@ public class AccountFragment extends Fragment {
     });
     // Inflate the layout for this fragment
       return accountView;
+  }
+
+  public static void finishFragment() {
+    ((Activity) mContext).finish();
   }
 
 

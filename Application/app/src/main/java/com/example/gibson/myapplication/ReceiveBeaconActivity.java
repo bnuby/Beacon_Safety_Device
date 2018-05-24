@@ -44,6 +44,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
         finish();
       }
     });
+
     startBeaconReceive();
 
 

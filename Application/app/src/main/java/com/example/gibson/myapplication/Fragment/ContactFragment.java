@@ -165,8 +165,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     mContext.startActivity(callingact);
   }
 
-
-
   public void requestPermission() {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
       if (getActivity().checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED &&

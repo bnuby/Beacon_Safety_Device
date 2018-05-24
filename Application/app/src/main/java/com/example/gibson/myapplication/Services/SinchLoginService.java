@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.gibson.myapplication.CallingActivity;
 import com.example.gibson.myapplication.MainActivity;
+import com.example.gibson.myapplication.Model.User;
 import com.sinch.android.rtc.AudioController;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.Sinch;
@@ -50,15 +51,15 @@ public class SinchLoginService extends Service {
       start(user);
       Log.i(TAG, user);
     }catch (Exception e){
-      user = DatabaseService.getDatabaseService().getUser().username;
-//      start(DatabaseService.getDatabaseService().getUser().username);
 
-      Log.i(TAG, e.toString());
-      Log.i(TAG, user);
+      DatabaseService databaseService = new DatabaseService(this);
+      String user = databaseService.getUser().username;
+      start(user);
     }
 
+
 //    return super.onStartCommand(intent, flags, startId);
-    return START_REDELIVER_INTENT;
+    return START_STICKY;
   }
 
 
