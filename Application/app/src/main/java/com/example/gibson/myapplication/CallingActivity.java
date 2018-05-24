@@ -89,7 +89,14 @@ public class CallingActivity extends AppCompatActivity {
         if (call != null) {
             if(call.getState().toString().equals("INITIATING")){
                 Log.i(TAG, "updateUI: getcall");
-                //call.answer();
+                if(MainActivity.receivedMode){
+                    call.answer();
+                    if(localView!=null &&view!=null){
+                        localView.removeAllViews();
+                        view.removeAllViews();
+                    }
+                }
+
             }
             if (call.getState() == CallState.ESTABLISHED) {
                 Log.i(TAG, "updateUI: add");
