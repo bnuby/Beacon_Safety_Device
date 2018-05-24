@@ -34,6 +34,7 @@ import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
 import com.sinch.android.rtc.calling.CallClient;
 import com.sinch.android.rtc.calling.CallClientListener;
+import com.sinch.android.rtc.calling.CallDirection;
 import com.sinch.android.rtc.calling.CallState;
 import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
@@ -145,16 +146,17 @@ public class CallingActivity extends AppCompatActivity {
                 String KK;
                 call =sinchBinder.getCall(recipientId);
                 if(call!=null) {
-                    Log.v(TAG, call.getDetails().toString());
-                    Log.v(TAG, call.getHeaders().toString());
-
                     if (call.getState() == CallState.ESTABLISHED) {
                         call.hangup();
                         finish();
-                    }
-                    if (call.getState() == CallState.INITIATING) {
-
-                        call.answer();
+                    }else if (call.getState() == CallState.INITIATING) {
+                        if(call.getDirection() == CallDirection.INCOMING)
+                            call.answer();
+                        else
+                            call.hangup();
+                    } else if (call.getState() == CallState.PROGRESSING) {
+                      if(call.getDirection() == CallDirection.OUTGOING)
+                        call.hangup();
                     }
                 }
             }

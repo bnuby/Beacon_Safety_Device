@@ -64,8 +64,6 @@ public class LoginActivity extends BeaconBaseActivity {
           } else {
             showLoading("Login..");
             RequestManager.loginRequest(usernameET.getText().toString(), passwordET.getText().toString());
-
-
           }
 
         } else

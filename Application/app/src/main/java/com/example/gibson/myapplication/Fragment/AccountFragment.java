@@ -24,7 +24,6 @@ public class AccountFragment extends Fragment {
   TextView callerIDTV;
   Button receiveBtn;
   Button logoutBtn;
-  static Context mContext;
   static View accountView;
 
   private static AccountFragment accountFragment;
@@ -52,7 +51,9 @@ public class AccountFragment extends Fragment {
     logoutBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        RequestManager.logoutRequest();
+        MainActivity.getDatabaseService().logout();
+        ((Activity) getContext()).finish();
+//        RequestManager.logoutRequest();
 //        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
       }
     });
@@ -68,10 +69,5 @@ public class AccountFragment extends Fragment {
     // Inflate the layout for this fragment
       return accountView;
   }
-
-  public static void finishFragment() {
-    ((Activity) mContext).finish();
-  }
-
 
 }
