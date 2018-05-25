@@ -26,7 +26,8 @@ import java.util.Map;
 
 public class RequestManager {
 
-  static String host = "http://182.155.208.64:5000";
+//  static String host = "http://182.155.208.64:5000";
+  static String host = "http://192.168.1.24:5000";
 
   public static boolean loginRequest(final String username, final String password) {
 

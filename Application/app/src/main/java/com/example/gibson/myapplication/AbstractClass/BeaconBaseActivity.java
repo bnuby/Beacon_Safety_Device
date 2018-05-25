@@ -19,11 +19,16 @@ public class BeaconBaseActivity extends AppCompatActivity{
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    mContext = this;
   }
 
   public static void sendToast(String message) {
     Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
+  }
+
+  @Override
+  protected void onStart() {
+    super.onStart();
+    mContext = this;
   }
 
   public static void showLoading(String message) {

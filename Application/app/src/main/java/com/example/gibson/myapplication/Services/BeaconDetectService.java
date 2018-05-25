@@ -5,8 +5,10 @@ import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanRecord;
 import android.bluetooth.le.ScanResult;
+import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
@@ -25,9 +27,11 @@ import com.example.gibson.myapplication.Fragment.ContactFragment;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
 import com.example.gibson.myapplication.R;
+import com.example.gibson.myapplication.ReceiveBeaconActivity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -59,19 +63,23 @@ public class BeaconDetectService extends Service {
       int mRssi = result.getRssi();
       int txPower = result.getScanRecord().getTxPowerLevel();
       String user = "ben";
+      Log.v("Beacon Address", result.getDevice().getAddress());
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
 
           Log.v("test", "" + calculateDistance(txPower, mRssi));
-          if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
-            ContactFragment.callUser(getApplicationContext(), user);
-            RequestManager.armAlarm(MainActivity.user,"danger");
-          } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
-            ContactFragment.callUser(getApplicationContext(), user);
-            RequestManager.armAlarm(MainActivity.user,"warning");
-          } else {
-            RequestManager.armAlarm(MainActivity.user,"safe");
-          }
+//          if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
+//            ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
+//            ContactFragment.callUser(getBaseContext(), user);
+//            RequestManager.armAlarm(MainActivity.user,"danger");
+//          } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
+//            ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
+//            ContactFragment.callUser(getBaseContext(), user);
+//            RequestManager.armAlarm(MainActivity.user,"warning");
+//          } else {
+//            ReceiveBeaconActivity.stopMedia();
+//            RequestManager.armAlarm(MainActivity.user,"safe");
+//          }
           i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
         }
       }
@@ -109,6 +117,7 @@ public class BeaconDetectService extends Service {
     }
 
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
     // check Bluetooth
   }
 
@@ -137,7 +146,14 @@ public class BeaconDetectService extends Service {
               @Override
               public void run() {
                 if(mBluetoothAdapter.isEnabled()) {
+
+
                   mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
+//                  ScanSettings.Builder builder = new ScanSettings.Builder();
+//                  builder.setReportDelay(500);
+//                  builder.setCallbackType(ScanSettings.)
+//                  builder.build();
+//                  mBluetoothLeScanner.startScan(null, builder.build(), mScanCallback);
                   mBluetoothLeScanner.startScan(mScanCallback);
                   service.shutdown();
                 }
@@ -183,7 +199,8 @@ public class BeaconDetectService extends Service {
 
   @Override
   public void onDestroy() {
-    mBluetoothLeScanner.stopScan(mScanCallback);
+    if(mBluetoothLeScanner != null)
+      mBluetoothLeScanner.stopScan(mScanCallback);
     queue.stop();
     super.onDestroy();
   }

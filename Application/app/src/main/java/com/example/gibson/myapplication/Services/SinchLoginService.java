@@ -45,7 +45,6 @@ public class SinchLoginService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     try{
-
       user = intent.getStringExtra("callerId");
       Log.i(TAG, user);
       start(user);
@@ -57,8 +56,6 @@ public class SinchLoginService extends Service {
       start(user);
     }
 
-
-//    return super.onStartCommand(intent, flags, startId);
     return START_STICKY;
   }
 
@@ -140,8 +137,12 @@ public class SinchLoginService extends Service {
       }
       return sinchClient.getAudioController();
     }
-
-
   }
 
+  @Override
+  public void onDestroy() {
+    sinchClient.stopListeningOnActiveConnection();
+
+    super.onDestroy();
+  }
 }

@@ -1,45 +1,31 @@
 package com.example.gibson.myapplication;
 
-import android.Manifest;
-import android.app.Notification;
-import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.media.AudioManager;
-import android.media.MediaPlayer;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.gibson.myapplication.Services.SinchLoginService;
 import com.sinch.android.rtc.PushPair;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
-import com.sinch.android.rtc.SinchError;
 import com.sinch.android.rtc.calling.Call;
-import com.sinch.android.rtc.calling.CallClient;
-import com.sinch.android.rtc.calling.CallClientListener;
 import com.sinch.android.rtc.calling.CallDirection;
 import com.sinch.android.rtc.calling.CallState;
 import com.sinch.android.rtc.video.VideoCallListener;
 import com.sinch.android.rtc.video.VideoController;
 
-import java.io.IOException;
 import java.util.List;
 
 public class CallingActivity extends AppCompatActivity {
@@ -89,22 +75,26 @@ public class CallingActivity extends AppCompatActivity {
         if (call != null) {
             if(call.getState().toString().equals("INITIATING")){
                 Log.i(TAG, "updateUI: getcall");
-                if(MainActivity.receivedMode){
+                if(MainActivity.receiveMode){
                     call.answer();
-                    if(localView!=null &&view!=null){
-                        localView.removeAllViews();
-                        view.removeAllViews();
-                    }
+                    removeAllView();
                 }
 
             }
             if (call.getState() == CallState.ESTABLISHED) {
                 Log.i(TAG, "updateUI: add");
+                removeAllView();
                 //when the call is established, addVideoViews configures the video to  be shown
                 addVideoViews();
             }
-
         }
+    }
+
+    public void removeAllView() {
+        if(localView!=null)
+            localView.removeAllViews();
+        if(view!=null)
+            view.removeAllViews();
 
     }
 
@@ -245,18 +235,17 @@ public class CallingActivity extends AppCompatActivity {
     private void addVideoViews() {
         final VideoController vc = sinchBinder.getVideoController();
         if (vc != null) {
+//            removeAllView();
             localView = (RelativeLayout) findViewById(R.id.localVideo);
+            view = (LinearLayout) findViewById(R.id.remoteVideo);
             localView.addView(vc.getLocalView());
-
             localView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    //this toggles the front camera to rear camera and vice versa
-                    vc.toggleCaptureDevicePosition();
+            // this toggles the front camera to rear camera and vice versa
+            vc.toggleCaptureDevicePosition();
                 }
             });
-
-            view = (LinearLayout) findViewById(R.id.remoteVideo);
             view.addView(vc.getRemoteView());
         }
     }

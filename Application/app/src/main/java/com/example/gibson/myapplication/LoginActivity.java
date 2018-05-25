@@ -1,6 +1,8 @@
 package com.example.gibson.myapplication;
 
 import android.content.Intent;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -27,7 +29,7 @@ public class LoginActivity extends BeaconBaseActivity {
   EditText passwordET;
   Button loginBtn;
   Button registerBtn;
-  Intent SinchLoginIntent;
+  static Intent sinchLoginIntent;
 
   public static RequestQueue getQueue() {
     return queue;
@@ -77,6 +79,21 @@ public class LoginActivity extends BeaconBaseActivity {
         startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
       }
     });
+
+
+//    MediaPlayer mediaPlayer;
+//
+//    AudioManager manager = (AudioManager) getSystemService(AUDIO_SERVICE);
+//
+//    manager.setStreamVolume(
+//            AudioManager.STREAM_MUSIC,
+//            10,
+//            AudioManager.ADJUST_RAISE);
+//
+//    mediaPlayer = MediaPlayer.create(this, R.raw.dog2);
+//    mediaPlayer.setVolume(100, 100);
+////    mediaPlayer.reset();
+//    mediaPlayer.start();
   }
 
 
@@ -84,9 +101,14 @@ public class LoginActivity extends BeaconBaseActivity {
 
 
   public static void startSinch(String userName){
-    Intent sinchLoginIntent =new Intent(mContext,SinchLoginService.class);
+
+    sinchLoginIntent =new Intent(mContext,SinchLoginService.class);
     sinchLoginIntent.putExtra("callerId",userName);
     mContext.startService(sinchLoginIntent);
+  }
+
+  public static void stopSinch(){
+    mContext.stopService(sinchLoginIntent);
   }
 
 

@@ -28,11 +28,16 @@ import com.example.gibson.myapplication.CallingActivity;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Contact;
 import com.example.gibson.myapplication.R;
+import com.example.gibson.myapplication.ReceiveBeaconActivity;
 import com.example.gibson.myapplication.Services.RequestManager;
 import com.example.gibson.myapplication.Services.SinchLoginService;
 import com.sinch.android.rtc.calling.Call;
+import com.sinch.android.rtc.calling.CallState;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by gibson on 20/03/2018.
@@ -44,6 +49,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   final int REQUESTCALL = 2;
   static ListView listView;
   private String callerId = "callerId";
+  static Call call;
   ArrayList<String> strings = new ArrayList<>();
   static ArrayList<Contact> contacts;
   private Button addBtn;
@@ -158,12 +164,33 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     listView.invalidateViews();
   }
 
-  public static void callUser(Context mContext, String user) {
-    Call call = sinchBinder.callUserVideo(user);
-    Intent callingact = new Intent(mContext,CallingActivity.class);
-    callingact.putExtra("recipientId",call.getCallId());
-    callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-    mContext.startActivity(callingact);
+  public static void callUser(final Context mContext, String user) {
+    call = sinchBinder.callUserVideo(user);
+    if(MainActivity.receiveMode) {
+      final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+      service.scheduleAtFixedRate(
+              new Runnable() {
+                @Override
+                public void run() {
+                  if(call.getState() == CallState.ESTABLISHED) {
+                    ReceiveBeaconActivity.stopMedia();
+                    changeCallingActivity(mContext);
+                    service.shutdown();
+                  }
+                }
+              }, 1000, 1000, TimeUnit.MILLISECONDS);
+
+
+      return;
+    }
+    changeCallingActivity(mContext);
+  }
+
+  public static void changeCallingActivity(Context mContext) {
+      Intent callingact = new Intent(mContext,CallingActivity.class);
+      callingact.putExtra("recipientId",call.getCallId());
+      callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      mContext.startActivity(callingact);
   }
 
   public void requestPermission() {

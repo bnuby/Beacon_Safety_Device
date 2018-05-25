@@ -1,7 +1,6 @@
 package com.example.gibson.myapplication.Fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,12 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.gibson.myapplication.LoginActivity;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.R;
 import com.example.gibson.myapplication.ReceiveBeaconActivity;
-import com.example.gibson.myapplication.Services.RequestManager;
 
 public class AccountFragment extends Fragment {
 
@@ -53,6 +51,8 @@ public class AccountFragment extends Fragment {
       public void onClick(View v) {
         MainActivity.getDatabaseService().logout();
         ((Activity) getContext()).finish();
+        LoginActivity.stopSinch();
+
 //        RequestManager.logoutRequest();
 //        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
       }
@@ -62,7 +62,7 @@ public class AccountFragment extends Fragment {
       @Override
       public void onClick(View v) {
         Intent intent = new Intent(getContext(), ReceiveBeaconActivity.class);
-        MainActivity.receivedMode = true;
+        MainActivity.receiveMode = true;
         startActivity(intent);
       }
     });
