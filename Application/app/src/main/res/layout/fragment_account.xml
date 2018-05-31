@@ -13,7 +13,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@android:color/holo_blue_bright"
+        android:background="#71a3d5"
         android:orientation="vertical"
         android:paddingBottom="50dp"
         android:paddingEnd="50dp"
@@ -30,6 +30,7 @@
             android:layout_weight="1"
             android:text="TextView"
             android:textSize="24sp"
+            android:textColor="#FFFFFF"
             tools:text="name" />
 
         <TextView
@@ -38,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="TextView"
+            android:textColor="@android:color/background_light"
             tools:text="Caller" />
     </LinearLayout>
 
@@ -51,7 +53,9 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/receiveBtn" />
+        app:layout_constraintTop_toBottomOf="@+id/receiveBtn"
+        android:background="@drawable/register_button"
+        />
 
     <Button
         android:id="@+id/receiveBtn"
@@ -61,6 +65,8 @@
         android:text="receive"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+        android:background="@drawable/default_button"
+        />
 
 </android.support.constraint.ConstraintLayout>

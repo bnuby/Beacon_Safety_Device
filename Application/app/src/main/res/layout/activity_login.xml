@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     tools:context=".LoginFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -44,10 +45,11 @@
             <Button
                 android:id="@+id/loginBtn"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
+                android:layout_margin="5dp"
                 android:layout_weight="0.5"
+                android:background="@drawable/login_button"
                 android:text="Login"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -60,8 +62,9 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginTop="10dp"
+                android:layout_margin="5dp"
                 android:layout_weight="0.5"
+                android:background="@drawable/register_button"
                 android:text="Register"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -7,7 +7,7 @@
     <!--Title-->
     <string name="title_beacon">Beacon</string>
     <string name="title_contact">Contact</string>
-    <string name="title_manage_beacon">Manage Beacon</string>
+    <string name="title_manage_beacon">Manage</string>
     <string name="title_setting">Setting</string>
     <!--Title-->
     <string name="mqtt_setting">MQTT Setting</string>

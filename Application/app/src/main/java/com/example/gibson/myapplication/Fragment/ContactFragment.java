@@ -275,7 +275,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
         TextView name = convertView.findViewById(R.id.contactTV);
         name.setText(contacts.get(position).name);
-
+        Log.v("name", contacts.get(position).name);
         Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(contacts.get(position));
 

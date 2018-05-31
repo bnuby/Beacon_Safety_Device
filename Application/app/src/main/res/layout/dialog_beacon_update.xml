@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -215,14 +216,18 @@
             android:id="@+id/beacon_dialog_cancelBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0.5"
+            android:background="@drawable/register_button"
             android:text="@string/cancel" />
 
         <Button
             android:id="@+id/beacon_dialog_updateBtn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_weight="0.5"
+            android:background="@drawable/default_button"
             android:text="@string/update" />
     </LinearLayout>
 </LinearLayout>
