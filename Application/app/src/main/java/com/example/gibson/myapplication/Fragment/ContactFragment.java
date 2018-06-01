@@ -190,7 +190,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                     service.shutdownNow();
                   }
                 }
-              }, 1000, 1000, TimeUnit.MILLISECONDS);
+              }, 1000, 3000, TimeUnit.MILLISECONDS);
       return;
     }
     CallingActivity.changeCallingActivity(mContext, call);

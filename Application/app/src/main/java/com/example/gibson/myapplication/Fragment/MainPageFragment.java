@@ -81,7 +81,7 @@ public class MainPageFragment extends Fragment implements View.OnClickListener {
         if (ContextCompat.checkSelfPermission(rootview.getContext(),
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
-          checkLocation.shutdown();
+          checkLocation.shutdownNow();
         }
       }
     }, 0, 4000, TimeUnit.MILLISECONDS);

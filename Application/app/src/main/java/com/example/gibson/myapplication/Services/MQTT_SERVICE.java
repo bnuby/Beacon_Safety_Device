@@ -173,7 +173,7 @@ public class MQTT_SERVICE {
           connect();
         }
       }
-    }, 0 * 1000, 2 * 1000, TimeUnit.MILLISECONDS);
+    }, 0 * 1000, 3 * 1000, TimeUnit.MILLISECONDS);
   }
 
   public void cancelConnect() {

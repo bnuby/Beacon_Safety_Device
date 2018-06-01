@@ -182,7 +182,7 @@ public class BeaconDetectService extends Service {
                   service.shutdownNow();
                 }
               }
-            }, 1000, 1000, TimeUnit.MILLISECONDS);
+            }, 0, 3000, TimeUnit.MILLISECONDS);
   }
 
   public double calculateAccuracy(int txPower, double rssi) {
