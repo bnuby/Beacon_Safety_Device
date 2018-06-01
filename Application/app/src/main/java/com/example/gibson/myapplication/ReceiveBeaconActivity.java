@@ -101,7 +101,8 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
 
   public static void stopVideo() {
     Log.v("call", "stop video");
-    videoView.stopPlayback();
+    if (videoView.isPlaying())
+      videoView.stopPlayback();
     Log.v("call", "stop video finished");
 
   }
