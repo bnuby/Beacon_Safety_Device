@@ -117,6 +117,7 @@ public class CallingActivity extends AppCompatActivity {
             vibrator.vibrate(new long[]{500, 1000, 500, 1000, 500, 1000}, 0);
 
             setVolumeControlStream(AudioManager.MODE_RINGTONE);
+
             audioManager.setRingerMode(AudioManager.RINGER_MODE_NORMAL);
 //            getActualDefaultRingtoneUri(this,RingtoneManager.TYPE_RINGTONE);
 
@@ -130,7 +131,7 @@ public class CallingActivity extends AppCompatActivity {
 
             ringtone.play();
 
-            Log.i(TAG, "onCreate: Incom");
+            Log.i(TAG, "onCreate: Income");
             button.setText("hang on");
         }
 
@@ -175,6 +176,10 @@ public class CallingActivity extends AppCompatActivity {
 //            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
 
             vibrator.cancel();
+//
+//            if(MainActivity.receiveMode) {
+//                ReceiveBeaconActivity.startBeaconService();
+//            }
 
             if(ringtone != null && ringtone.isPlaying())
                 ringtone.stop();
@@ -230,6 +235,15 @@ public class CallingActivity extends AppCompatActivity {
         public void onVideoTrackResumed(Call call) {
 
         }
+    }
+
+
+    public static void changeCallingActivity(Context mContext, Call call) {
+        Log.v("call", "activity");
+        Intent callingact = new Intent(mContext,CallingActivity.class);
+        callingact.putExtra("recipientId",call.getCallId());
+        callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(callingact);
     }
 
     private void addVideoViews() {

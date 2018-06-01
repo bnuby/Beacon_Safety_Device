@@ -1,6 +1,7 @@
 package com.example.gibson.myapplication.Fragment;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,6 +10,8 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -54,7 +57,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   static ArrayList<Contact> contacts;
   private Button addBtn;
   private static SinchLoginService.SinchBinder sinchBinder;
-
   private static ContactFragment contactFragment;
 
 
@@ -172,25 +174,26 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
               new Runnable() {
                 @Override
                 public void run() {
-                  if(call.getState() == CallState.ESTABLISHED) {
-                    ReceiveBeaconActivity.stopMedia();
-                    changeCallingActivity(mContext);
-                    service.shutdown();
+                  Log.v("Call", ""+call.getState());
+
+                  if(call.getState() == CallState.INITIATING) {
+                    Log.v("Call", "Established");
+                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                      @Override
+                      public void run() {
+                        ReceiveBeaconActivity.stopMedia();
+                        ReceiveBeaconActivity.stopVideo();
+                        ReceiveBeaconActivity.stopBeaconService();
+                        CallingActivity.changeCallingActivity(mContext, call);
+                      }
+                    });
+                    service.shutdownNow();
                   }
                 }
               }, 1000, 1000, TimeUnit.MILLISECONDS);
-
-
       return;
     }
-    changeCallingActivity(mContext);
-  }
-
-  public static void changeCallingActivity(Context mContext) {
-      Intent callingact = new Intent(mContext,CallingActivity.class);
-      callingact.putExtra("recipientId",call.getCallId());
-      callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-      mContext.startActivity(callingact);
+    CallingActivity.changeCallingActivity(mContext, call);
   }
 
   public void requestPermission() {
@@ -275,7 +278,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 
         TextView name = convertView.findViewById(R.id.contactTV);
         name.setText(contacts.get(position).name);
-
+        Log.v("name", contacts.get(position).name);
         Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(contacts.get(position));
 

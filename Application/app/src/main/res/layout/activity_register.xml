@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:padding="10dp"
@@ -95,7 +96,7 @@
         android:weightSum="1">
 
         <TextView
-            android:id="@+id/passwordTV"
+            android:id="@+id/confirmTV"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="0.25"
@@ -144,6 +145,7 @@
     <Button
         android:id="@+id/submitBtn"
         android:layout_width="wrap_content"
+        android:background="@drawable/default_button"
         android:layout_height="0dp"
         android:layout_weight="0.1"
         android:text="SUBMIT" />

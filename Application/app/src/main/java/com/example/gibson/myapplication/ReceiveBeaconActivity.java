@@ -6,41 +6,69 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.MediaController;
+import android.widget.VideoView;
 
 import com.example.gibson.myapplication.Services.BeaconDetectService;
+
+import java.io.IOException;
 
 public class ReceiveBeaconActivity extends AppCompatActivity {
 
   Button cancelBtn;
-  Intent intent;
+  static Intent intent;
   public BluetoothAdapter mBluetoothAdapter;
   public static final int BluetoothRequestCode = 2;
   static MediaPlayer mediaPlayer;
   static Context mContext;
 
+  static VideoView videoView;
+
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_receivebeacon);
-
     mContext = this;
+    intent = new Intent(this, BeaconDetectService.class);
+    startBeaconReceive();
 
     cancelBtn = findViewById(R.id.cancelBtn);
     cancelBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        intent = new Intent(ReceiveBeaconActivity.this, BeaconDetectService.class);
         stopService(intent);
         finish();
       }
     });
-    startBeaconReceive();
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+    videoView = findViewById(R.id.videoView);
+    videoView.setMediaController(new MediaController(this));
+
+    videoView.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.dog_bark));
+    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+      @Override
+      public void onCompletion(MediaPlayer mp) {
+        mp.stop();
+        try {
+          mp.prepare();
+          mp.start();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+      }
+    });
+    videoView.start();
+
   }
 
   public static void playMedia(int music_source, int volume) {
@@ -58,6 +86,10 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   public static void stopMedia() {
     if(mediaPlayer != null && mediaPlayer.isPlaying())
       mediaPlayer.stop();
+  }
+
+  public static void stopVideo() {
+    videoView.stopPlayback();
   }
 
 
@@ -84,9 +116,16 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
 
   public void startBeaconReceive() {
     if(mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-      intent = new Intent(this, BeaconDetectService.class);
-      startService(intent);
+      startBeaconService();
     }
+  }
+
+  public static void startBeaconService() {
+    mContext.startService(intent);
+  }
+
+  public static void stopBeaconService() {
+    mContext.stopService(intent);
   }
 
   @Override
@@ -98,7 +137,8 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
 
   @Override
   protected void onPause() {
-    stopService(new Intent(ReceiveBeaconActivity.this, BeaconDetectService.class));
+    stopMedia();
+    stopBeaconService();
     super.onPause();
   }
 
@@ -106,6 +146,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   protected void onDestroy() {
     super.onDestroy();
     stopMedia();
+    stopBeaconService();
     MainActivity.receiveMode = false;
   }
 }

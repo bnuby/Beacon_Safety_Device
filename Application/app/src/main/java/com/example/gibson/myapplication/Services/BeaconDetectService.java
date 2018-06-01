@@ -11,6 +11,7 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
@@ -66,25 +67,31 @@ public class BeaconDetectService extends Service {
       Log.v("Beacon Address", result.getDevice().getAddress());
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
-
           Log.v("test", "" + calculateDistance(txPower, mRssi));
-//          if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
-//            ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
-//            ContactFragment.callUser(getBaseContext(), user);
-//            RequestManager.armAlarm(MainActivity.user,"danger");
-//          } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
-//            ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
-//            ContactFragment.callUser(getBaseContext(), user);
-//            RequestManager.armAlarm(MainActivity.user,"warning");
-//          } else {
-//            ReceiveBeaconActivity.stopMedia();
-//            RequestManager.armAlarm(MainActivity.user,"safe");
-//          }
+          if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
+            ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
+            RequestManager.armAlarm(MainActivity.user,"danger");
+            ContactFragment.callUser(getBaseContext(), user);
+          } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
+            ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
+            RequestManager.armAlarm(MainActivity.user,"warning");
+            ContactFragment.callUser(getBaseContext(), user);
+          } else {
+            ReceiveBeaconActivity.stopMedia();
+            RequestManager.armAlarm(MainActivity.user,"safe");
+          }
           i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
         }
       }
-
     }
+
+
+    @Override
+    public void onScanFailed(int errorCode) {
+      super.onScanFailed(errorCode);
+      Log.v("ScanTask", "Some error occurred" + errorCode);
+    };
+
   };
 
 
@@ -146,16 +153,33 @@ public class BeaconDetectService extends Service {
               @Override
               public void run() {
                 if(mBluetoothAdapter.isEnabled()) {
-
+                  Log.v("BeaconDetectService", "true");
 
                   mBluetoothLeScanner = mBluetoothAdapter.getBluetoothLeScanner();
-//                  ScanSettings.Builder builder = new ScanSettings.Builder();
-//                  builder.setReportDelay(500);
-//                  builder.setCallbackType(ScanSettings.)
-//                  builder.build();
-//                  mBluetoothLeScanner.startScan(null, builder.build(), mScanCallback);
-                  mBluetoothLeScanner.startScan(mScanCallback);
-                  service.shutdown();
+
+//                  // Blue Scan Filters
+                  ArrayList<ScanFilter> filters = new ArrayList<>();
+
+                  for(int i = 0; i < beaconList.size(); i++) {
+                    Log.v("mac", String.valueOf(beaconList.get(i).get("mac")).toUpperCase());
+                    ScanFilter filter = new ScanFilter.Builder().setDeviceAddress(String.valueOf(beaconList.get(i).get("mac")).toUpperCase()).build();
+                    filters.add(filter);
+                  }
+
+                  // Bluetooth Scann Setting
+                  ScanSettings settings = new ScanSettings.Builder()
+                          .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
+//                          .setReportDelay(500)
+                          .build();
+
+//                  if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+//                    builder.setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES);
+//                  builder.setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY);
+
+                  mBluetoothLeScanner.startScan(filters, settings, mScanCallback);
+
+//                  mBluetoothLeScanner.startScan(mScanCallback);
+                  service.shutdownNow();
                 }
               }
             }, 1000, 1000, TimeUnit.MILLISECONDS);

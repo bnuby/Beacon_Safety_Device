@@ -17,6 +17,19 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
+
+//
+//    sourceSets {
+//        main {
+//            manifest.srcFile()
+//            res.srcDirs =
+//                    [
+//                            '/src/main/res/layout',
+//                            '/src/main/res/layout/fragment',
+//
+//                    ]
+//        }
+//    }
 }
 
 
