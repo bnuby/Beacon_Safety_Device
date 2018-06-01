@@ -192,9 +192,8 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                   }
                 }
               }, 1000, 3000, TimeUnit.MILLISECONDS);
-      return;
-    }
-    changeCallingActivity(mContext);
+    } else
+      changeCallingActivity(mContext);
   }
 
 
