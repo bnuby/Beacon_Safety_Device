@@ -177,7 +177,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                 public void run() {
                   Log.v("Call", ""+call.getState());
 
-                  if(call.getState() == CallState.INITIATING) {
+                  if(call.getState() == CallState.ESTABLISHED) {
                     callStateListener.shutdown();
                     Log.v("Call", "Established");
                     ((Activity)ReceiveBeaconActivity.mContext).runOnUiThread(new Runnable() {

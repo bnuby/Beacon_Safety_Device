@@ -1,5 +1,6 @@
 package com.example.gibson.myapplication;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -50,33 +51,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     });
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-
-    videoView = findViewById(R.id.videoView);
-    videoView.setMediaController(new MediaController(this));
-
-    videoView.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.dog_bark));
-    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-      @Override
-      public void onCompletion(MediaPlayer mp) {
-        mp.stop();
-        try {
-          mp.prepare();
-          mp.start();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-      }
-    });
-    videoView.start();
-//    new Handler().postDelayed(
-//            new Runnable() {
-//              @Override
-//              public void run() {
-//                videoView.stopPlayback();
-//
-//              }
-//            }, 3000);
+    startVideo(getBaseContext());
 
   }
 
@@ -97,6 +72,26 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     if(mediaPlayer != null && mediaPlayer.isPlaying())
       mediaPlayer.stop();
     Log.v("call", "stop media finished");
+  }
+
+  public static void startVideo(Context mContext) {
+    videoView = ((Activity)mContext).findViewById(R.id.videoView);
+    videoView.setMediaController(new MediaController(mContext));
+
+    videoView.setVideoURI(Uri.parse("android.resource://" +mContext.getPackageName()+ "/"+R.raw.dog_bark));
+    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+      @Override
+      public void onCompletion(MediaPlayer mp) {
+        mp.stop();
+        try {
+          mp.prepare();
+          mp.start();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+      }
+    });
+    videoView.start();
   }
 
   public static void stopVideo() {
@@ -150,6 +145,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   protected void onResume() {
     checkBluetooth();
     startBeaconReceive();
+    startVideo(getBaseContext());
     super.onResume();
   }
 
