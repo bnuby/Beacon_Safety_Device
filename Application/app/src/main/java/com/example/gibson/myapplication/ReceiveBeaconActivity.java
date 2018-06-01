@@ -28,7 +28,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   public BluetoothAdapter mBluetoothAdapter;
   public static final int BluetoothRequestCode = 2;
   static MediaPlayer mediaPlayer;
-  static Context mContext;
+  public static Context mContext;
 
   static VideoView videoView;
 

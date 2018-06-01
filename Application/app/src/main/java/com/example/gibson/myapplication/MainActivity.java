@@ -109,6 +109,7 @@ public class MainActivity extends BeaconBaseActivity {
               Manifest.permission.RECORD_AUDIO,
               Manifest.permission.CAMERA,
               Manifest.permission.ACCESS_NETWORK_STATE,
+              Manifest.permission.READ_EXTERNAL_STORAGE,
               Manifest.permission.READ_PHONE_STATE
       },100);
     }

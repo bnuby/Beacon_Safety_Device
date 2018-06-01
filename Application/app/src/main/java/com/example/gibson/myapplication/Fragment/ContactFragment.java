@@ -180,13 +180,13 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                   if(call.getState() == CallState.INITIATING) {
                     callStateListener.shutdown();
                     Log.v("Call", "Established");
-                    ((Activity)mContext).runOnUiThread(new Runnable() {
+                    ((Activity)ReceiveBeaconActivity.mContext).runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
 //                        ReceiveBeaconActivity.stopBeaconService();
 //                        ReceiveBeaconActivity.stopMedia();
 //                        ReceiveBeaconActivity.stopVideo();
-                        changeCallingActivity(mContext);
+                        changeCallingActivity(ReceiveBeaconActivity.mContext);
                       }
                     });
                   }
