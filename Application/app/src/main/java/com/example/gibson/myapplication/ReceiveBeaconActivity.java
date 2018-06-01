@@ -93,12 +93,17 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   }
 
   public static void stopMedia() {
+    Log.v("call", "stop media");
     if(mediaPlayer != null && mediaPlayer.isPlaying())
       mediaPlayer.stop();
+    Log.v("call", "stop media finished");
   }
 
   public static void stopVideo() {
+    Log.v("call", "stop video");
     videoView.stopPlayback();
+    Log.v("call", "stop video finished");
+
   }
 
 
@@ -134,7 +139,10 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   }
 
   public static void stopBeaconService() {
+    Log.v("call", "stop service");
     mContext.stopService(intent);
+    Log.v("call", "stop service finished");
+
   }
 
   @Override
