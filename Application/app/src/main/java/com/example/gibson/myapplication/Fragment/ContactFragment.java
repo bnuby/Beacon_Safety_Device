@@ -53,6 +53,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   static ListView listView;
   private String callerId = "callerId";
   static Call call;
+  static ScheduledExecutorService callStateListener;
   ArrayList<String> strings = new ArrayList<>();
   static ArrayList<Contact> contacts;
   private Button addBtn;
@@ -169,8 +170,8 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   public static void callUser(final Context mContext, String user) {
     call = sinchBinder.callUserVideo(user);
     if(MainActivity.receiveMode) {
-      final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-      service.scheduleAtFixedRate(
+      callStateListener = Executors.newSingleThreadScheduledExecutor();
+      callStateListener.scheduleAtFixedRate(
               new Runnable() {
                 @Override
                 public void run() {
@@ -181,20 +182,30 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
+                        ReceiveBeaconActivity.stopBeaconService();
                         ReceiveBeaconActivity.stopMedia();
                         ReceiveBeaconActivity.stopVideo();
-                        ReceiveBeaconActivity.stopBeaconService();
-                        CallingActivity.changeCallingActivity(mContext, call);
+                        changeCallingActivity(mContext);
                       }
                     });
-                    service.shutdownNow();
+                    callStateListener.shutdownNow();
                   }
                 }
               }, 1000, 3000, TimeUnit.MILLISECONDS);
       return;
     }
-    CallingActivity.changeCallingActivity(mContext, call);
+    changeCallingActivity(mContext);
   }
+
+
+  public static void changeCallingActivity(Context mContext) {
+    Log.v("call", "activity");
+    Intent callingact = new Intent(mContext,CallingActivity.class);
+    callingact.putExtra("recipientId",call.getCallId());
+    callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    mContext.startActivity(callingact);
+  }
+
 
   public void requestPermission() {
     if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

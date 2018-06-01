@@ -40,24 +40,23 @@ import java.util.concurrent.TimeUnit;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class BeaconDetectService extends Service {
-  ArrayList<HashMap<String,Object>> beaconList;
+  static ArrayList<HashMap<String,Object>> beaconList;
   public static RequestQueue queue;
 
+
+  static BluetoothAdapter mBluetoothAdapter;
+  static BluetoothLeScanner mBluetoothLeScanner;
+  static Context mContext;
 
   @Nullable
   @Override
   public IBinder onBind(Intent intent) {
     return null;
   }
-  public BluetoothAdapter mBluetoothAdapter;
-  public BluetoothLeScanner mBluetoothLeScanner;
 
-  protected ScanCallback mScanCallback = new ScanCallback() {
+  protected static ScanCallback mScanCallback = new ScanCallback() {
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
-
-      Log.v("asd", "scan");
-
 
       ScanRecord mScanRecord = result.getScanRecord();
       byte[] manufacturerData = mScanRecord.getManufacturerSpecificData(224);
@@ -69,13 +68,15 @@ public class BeaconDetectService extends Service {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
           if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
+            mBluetoothLeScanner.stopScan(mScanCallback);
             ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
-            ContactFragment.callUser(getBaseContext(), user);
+            ContactFragment.callUser(mContext, user);
           } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
+            mBluetoothLeScanner.stopScan(mScanCallback);
             ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
-            ContactFragment.callUser(getBaseContext(), user);
+            ContactFragment.callUser(mContext, user);
           } else {
             ReceiveBeaconActivity.stopMedia();
             RequestManager.armAlarm(MainActivity.user,"safe");
@@ -99,6 +100,8 @@ public class BeaconDetectService extends Service {
   @Override
   public void onCreate() {
     super.onCreate();
+
+    mContext = getBaseContext();
 
     ArrayList<Beacon> beacons = MainActivity.getDatabaseService().getBeacons();
 
@@ -146,7 +149,7 @@ public class BeaconDetectService extends Service {
     return Service.START_NOT_STICKY;
   }
 
-  void requestBluetoothScan() {
+  static void requestBluetoothScan() {
     final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
     service.scheduleAtFixedRate(
             new Runnable() {
@@ -198,7 +201,7 @@ public class BeaconDetectService extends Service {
     }
   }
 
-  public double calculateDistance(int txPower, double rssi) {
+  public static double calculateDistance(int txPower, double rssi) {
     Log.v("TXPOWER", String.valueOf(txPower));
     Log.v("RSSI", String.valueOf(rssi));
     double iRssi = Math.abs(rssi);

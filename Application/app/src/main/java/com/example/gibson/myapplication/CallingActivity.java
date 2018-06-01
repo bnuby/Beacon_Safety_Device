@@ -237,15 +237,6 @@ public class CallingActivity extends AppCompatActivity {
         }
     }
 
-
-    public static void changeCallingActivity(Context mContext, Call call) {
-        Log.v("call", "activity");
-        Intent callingact = new Intent(mContext,CallingActivity.class);
-        callingact.putExtra("recipientId",call.getCallId());
-        callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(callingact);
-    }
-
     private void addVideoViews() {
         final VideoController vc = sinchBinder.getVideoController();
         if (vc != null) {
