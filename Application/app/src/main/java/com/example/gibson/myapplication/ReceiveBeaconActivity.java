@@ -51,7 +51,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     });
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-    startVideo(getBaseContext());
+    startVideo();
 
   }
 
@@ -74,11 +74,11 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     Log.v("call", "stop media finished");
   }
 
-  public static void startVideo(Context mContext) {
-    videoView = ((Activity)mContext).findViewById(R.id.videoView);
-    videoView.setMediaController(new MediaController(mContext));
+  public void startVideo() {
+    videoView = findViewById(R.id.videoView);
+    videoView.setMediaController(new MediaController(this));
 
-    videoView.setVideoURI(Uri.parse("android.resource://" +mContext.getPackageName()+ "/"+R.raw.dog_bark));
+    videoView.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.dog_bark));
     videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
       @Override
       public void onCompletion(MediaPlayer mp) {
@@ -145,7 +145,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   protected void onResume() {
     checkBluetooth();
     startBeaconReceive();
-    startVideo(getBaseContext());
+    startVideo();
     super.onResume();
   }
 
