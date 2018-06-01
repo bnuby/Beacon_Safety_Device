@@ -8,6 +8,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -68,6 +69,14 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
       }
     });
     videoView.start();
+//    new Handler().postDelayed(
+//            new Runnable() {
+//              @Override
+//              public void run() {
+//                videoView.stopPlayback();
+//
+//              }
+//            }, 3000);
 
   }
 

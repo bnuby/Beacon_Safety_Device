@@ -186,9 +186,9 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                         ReceiveBeaconActivity.stopMedia();
                         ReceiveBeaconActivity.stopVideo();
                         changeCallingActivity(mContext);
+                        callStateListener.shutdownNow();
                       }
                     });
-                    callStateListener.shutdownNow();
                   }
                 }
               }, 1000, 3000, TimeUnit.MILLISECONDS);

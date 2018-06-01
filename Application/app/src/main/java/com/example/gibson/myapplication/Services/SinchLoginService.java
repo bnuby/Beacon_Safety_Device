@@ -55,7 +55,6 @@ public class SinchLoginService extends Service {
       String user = databaseService.getUser().username;
       start(user);
     }
-
     return START_STICKY;
   }
 
@@ -74,7 +73,6 @@ public class SinchLoginService extends Service {
     sinchClient.start();
     Log.i(TAG, "start: ");  
     sinchClient.getCallClient().addCallClientListener(new SinchCallClientListener());
-
   }
 }
 
