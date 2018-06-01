@@ -178,15 +178,15 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                   Log.v("Call", ""+call.getState());
 
                   if(call.getState() == CallState.INITIATING) {
+                    callStateListener.shutdown();
                     Log.v("Call", "Established");
                     ((Activity)mContext).runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
-                        ReceiveBeaconActivity.stopBeaconService();
-                        ReceiveBeaconActivity.stopMedia();
-                        ReceiveBeaconActivity.stopVideo();
+//                        ReceiveBeaconActivity.stopBeaconService();
+//                        ReceiveBeaconActivity.stopMedia();
+//                        ReceiveBeaconActivity.stopVideo();
                         changeCallingActivity(mContext);
-                        callStateListener.shutdownNow();
                       }
                     });
                   }
@@ -202,7 +202,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     Log.v("call", "activity");
     Intent callingact = new Intent(mContext,CallingActivity.class);
     callingact.putExtra("recipientId",call.getCallId());
-    callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+    callingact.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
     mContext.startActivity(callingact);
   }
 
