@@ -183,9 +183,9 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                     ((Activity)ReceiveBeaconActivity.mContext).runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
-//                        ReceiveBeaconActivity.stopBeaconService();
-//                        ReceiveBeaconActivity.stopMedia();
-//                        ReceiveBeaconActivity.stopVideo();
+                        ReceiveBeaconActivity.stopBeaconService();
+                        ReceiveBeaconActivity.stopMedia();
+                        ReceiveBeaconActivity.stopVideo();
                         changeCallingActivity(ReceiveBeaconActivity.mContext);
                       }
                     });
