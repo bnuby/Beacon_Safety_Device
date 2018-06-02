@@ -166,8 +166,15 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     ContactFragment.contacts = contacts;
     listView.invalidateViews();
   }
+  public static void endcall(){
+    try{
+      call.hangup();
+    }catch (Exception e){
+      Log.i(TAG, "endcall: fail to hangup");
+    }
+  }
 
-  public static void callUser(final Context mContext, String user) {
+  public static void callUser(final Context mContext, final String user) {
     call = sinchBinder.callUserVideo(user);
     if(MainActivity.receiveMode) {
       callStateListener = Executors.newSingleThreadScheduledExecutor();
@@ -176,6 +183,15 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void run() {
                   Log.v("Call", ""+call.getState());
+                  if(call.getState()==CallState.ENDED){
+                    callStateListener.shutdown();
+                    call.hangup();
+                    if(ReceiveBeaconActivity.cancel){
+                      return;
+                    }
+                    else
+                      callUser(mContext, user);
+                  }
 
                   if(call.getState() == CallState.ESTABLISHED) {
                     callStateListener.shutdown();

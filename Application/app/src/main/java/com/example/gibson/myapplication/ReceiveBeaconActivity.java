@@ -18,7 +18,9 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import com.example.gibson.myapplication.Fragment.ContactFragment;
 import com.example.gibson.myapplication.Services.BeaconDetectService;
+import com.sinch.android.rtc.calling.Call;
 
 import java.io.IOException;
 
@@ -30,6 +32,9 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   public static final int BluetoothRequestCode = 2;
   static MediaPlayer mediaPlayer;
   public static Context mContext;
+  public static Boolean cancel;
+  Call call;
+
 
   static VideoView videoView;
 
@@ -40,12 +45,15 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     mContext = this;
     intent = new Intent(this, BeaconDetectService.class);
     startBeaconReceive();
+    cancel=false;
 
     cancelBtn = findViewById(R.id.cancelBtn);
     cancelBtn.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         stopService(intent);
+        ContactFragment.endcall();
+        cancel= true;
         finish();
       }
     });
