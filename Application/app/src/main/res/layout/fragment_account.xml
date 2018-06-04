@@ -13,7 +13,7 @@
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="#71a3d5"
+        android:background="#ffc36f"
         android:orientation="vertical"
         android:paddingBottom="50dp"
         android:paddingEnd="50dp"

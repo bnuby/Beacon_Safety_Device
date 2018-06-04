@@ -201,7 +201,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                       public void run() {
                         ReceiveBeaconActivity.stopBeaconService();
                         ReceiveBeaconActivity.stopMedia();
-                        ReceiveBeaconActivity.stopVideo();
+//                        ReceiveBeaconActivity.stopVideo();
                         changeCallingActivity(ReceiveBeaconActivity.mContext);
                       }
                     });
