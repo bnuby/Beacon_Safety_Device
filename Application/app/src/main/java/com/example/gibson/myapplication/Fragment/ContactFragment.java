@@ -32,6 +32,7 @@ import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Contact;
 import com.example.gibson.myapplication.R;
 import com.example.gibson.myapplication.ReceiveBeaconActivity;
+import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.RequestManager;
 import com.example.gibson.myapplication.Services.SinchLoginService;
 import com.sinch.android.rtc.calling.Call;
@@ -186,6 +187,11 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                   if(call.getState()==CallState.ENDED){
                     callStateListener.shutdown();
                     call.hangup();
+                    try{
+                      ReceiveBeaconActivity.startBeaconService();
+                    }catch (Exception e){
+                      Log.i(TAG, "run: error"+e.getStackTrace().toString());
+                    }
                     if(ReceiveBeaconActivity.cancel){
                       return;
                     }

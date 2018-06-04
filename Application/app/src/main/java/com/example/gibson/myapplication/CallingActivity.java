@@ -184,8 +184,11 @@ public class CallingActivity extends AppCompatActivity {
             if(ringtone != null && ringtone.isPlaying())
                 ringtone.stop();
             if (call != null) {
-                if(localView!=null &&view!=null){
+                if(localView!=null){
                     localView.removeAllViews();
+
+                }
+                if(view!=null){
                     view.removeAllViews();
                 }
                 call.hangup();

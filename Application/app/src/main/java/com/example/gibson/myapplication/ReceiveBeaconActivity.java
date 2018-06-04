@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
@@ -34,9 +36,13 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   public static Context mContext;
   public static Boolean cancel;
   Call call;
+  public static ImageView dog;
+  public static Drawable sleepDog;
+  public static Drawable angeryDog;
 
 
   static VideoView videoView;
+
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -46,7 +52,9 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     intent = new Intent(this, BeaconDetectService.class);
     startBeaconReceive();
     cancel=false;
-
+    dog = findViewById(R.id.dogImg);
+    sleepDog = getResources().getDrawable(R.drawable.dog1);
+    angeryDog =getResources().getDrawable(R.drawable.dog2);
     cancelBtn = findViewById(R.id.cancelBtn);
     cancelBtn.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -59,7 +67,7 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
     });
     mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
-    startVideo();
+//    startVideo();
 
   }
 
@@ -81,34 +89,41 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
       mediaPlayer.stop();
     Log.v("call", "stop media finished");
   }
-
-  public void startVideo() {
-    videoView = findViewById(R.id.videoView);
-    videoView.setMediaController(new MediaController(this));
-
-    videoView.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.dog_bark));
-    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-      @Override
-      public void onCompletion(MediaPlayer mp) {
-        mp.stop();
-        try {
-          mp.prepare();
-          mp.start();
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-      }
-    });
-    videoView.start();
+  public static void setSleepDog(){
+    dog.setImageDrawable(sleepDog);
   }
 
-  public static void stopVideo() {
-    Log.v("call", "stop video");
-    if (videoView.isPlaying())
-      videoView.stopPlayback();
-    Log.v("call", "stop video finished");
-
+  public static void setAngryDog(){
+    dog.setImageDrawable(angeryDog);
   }
+
+//  public void startVideo() {
+//    videoView = findViewById(R.id.videoView);
+//    videoView.setMediaController(new MediaController(this));
+//
+//    videoView.setVideoURI(Uri.parse("android.resource://" +getPackageName()+ "/"+R.raw.dog_bark));
+//    videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//      @Override
+//      public void onCompletion(MediaPlayer mp) {
+//        mp.stop();
+//        try {
+//          mp.prepare();
+//          mp.start();
+//        } catch (IOException e) {
+//          e.printStackTrace();
+//        }
+//      }
+//    });
+//    videoView.start();
+//  }
+//
+//  public static void stopVideo() {
+//    Log.v("call", "stop video");
+//    if (videoView.isPlaying())
+//      videoView.stopPlayback();
+//    Log.v("call", "stop video finished");
+//
+//  }
 
 
 
@@ -153,7 +168,8 @@ public class ReceiveBeaconActivity extends AppCompatActivity {
   protected void onResume() {
     checkBluetooth();
     startBeaconReceive();
-    startVideo();
+    setSleepDog();
+//    startVideo();
     super.onResume();
   }
 

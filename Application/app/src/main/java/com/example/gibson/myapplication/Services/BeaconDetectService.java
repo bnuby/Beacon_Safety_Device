@@ -71,15 +71,22 @@ public class BeaconDetectService extends Service {
             mBluetoothLeScanner.stopScan(mScanCallback);
             ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
+            ReceiveBeaconActivity.setAngryDog();
+            ReceiveBeaconActivity.cancel=false;
             ContactFragment.callUser(mContext, user);
           } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
             ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
+            ReceiveBeaconActivity.setAngryDog();
+            ReceiveBeaconActivity.cancel=false;
             ContactFragment.callUser(mContext, user);
           } else {
             ReceiveBeaconActivity.stopMedia();
             RequestManager.armAlarm(MainActivity.user,"safe");
+            ReceiveBeaconActivity.setSleepDog();
+            ContactFragment.endcall();
+            ReceiveBeaconActivity.cancel=true;
           }
           i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
         }
