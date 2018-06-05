@@ -16,11 +16,5 @@
         android:textColor="@android:color/black"
         android:textSize="30sp" />
 
-    <Button
-        android:id="@+id/deleteBtn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.15"
-        android:background="@android:drawable/ic_menu_delete"
-        android:backgroundTint="@android:color/holo_red_dark" />
+
 </LinearLayout>

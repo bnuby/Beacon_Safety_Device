@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
+import com.example.gibson.myapplication.Fragment.DogFragment;
 import com.example.gibson.myapplication.Services.SinchLoginService;
 import com.sinch.android.rtc.PushPair;
 import com.sinch.android.rtc.calling.Call;
@@ -174,6 +175,9 @@ public class CallingActivity extends AppCompatActivity {
 //            call = null;
 //            SinchError a = endedCall.getDetails().getError();
 //            setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            if(MainActivity.receiveMode){
+                DogFragment.startBeaconService();
+            }
 
             vibrator.cancel();
 //
@@ -186,7 +190,6 @@ public class CallingActivity extends AppCompatActivity {
             if (call != null) {
                 if(localView!=null){
                     localView.removeAllViews();
-
                 }
                 if(view!=null){
                     view.removeAllViews();
@@ -224,7 +227,6 @@ public class CallingActivity extends AppCompatActivity {
 
         @Override
         public void onVideoTrackAdded(Call call) {
-
             Log.i(TAG, "onVideoTrackAdded: added");
             addVideoViews();
         }

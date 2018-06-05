@@ -1,6 +1,5 @@
 package com.example.gibson.myapplication.Services;
 
-import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -11,11 +10,8 @@ import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v4.app.NotificationCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import com.android.volley.Cache;
@@ -25,19 +21,15 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.Fragment.ContactFragment;
+import com.example.gibson.myapplication.Fragment.DogFragment;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
 import com.example.gibson.myapplication.R;
-import com.example.gibson.myapplication.ReceiveBeaconActivity;
-
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static java.util.concurrent.TimeUnit.MILLISECONDS;
 
 public class BeaconDetectService extends Service {
   static ArrayList<HashMap<String,Object>> beaconList;
@@ -69,24 +61,21 @@ public class BeaconDetectService extends Service {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
           if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
-            ReceiveBeaconActivity.playMedia(R.raw.dog2, 15);
+            DogFragment.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
-            ReceiveBeaconActivity.setAngryDog();
-            ReceiveBeaconActivity.cancel=false;
+            DogFragment.setAngryDog();
             ContactFragment.callUser(mContext, user);
           } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
-            ReceiveBeaconActivity.playMedia(R.raw.dog1, 10);
+            DogFragment.playMedia(R.raw.dog1, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
-            ReceiveBeaconActivity.setAngryDog();
-            ReceiveBeaconActivity.cancel=false;
+            DogFragment.setAngryDog();
             ContactFragment.callUser(mContext, user);
           } else {
-            ReceiveBeaconActivity.stopMedia();
+            DogFragment.stopMedia();
             RequestManager.armAlarm(MainActivity.user,"safe");
-            ReceiveBeaconActivity.setSleepDog();
+            DogFragment.setSleepDog();
             ContactFragment.endcall();
-            ReceiveBeaconActivity.cancel=true;
           }
           i.put("distance", String.format("%.3f",calculateDistance(txPower, mRssi)));
         }
@@ -101,13 +90,21 @@ public class BeaconDetectService extends Service {
     };
 
   };
+  public static void stopscan(){
+    try{
+      mBluetoothLeScanner.stopScan(mScanCallback);
+    }catch (Exception e){
+      Log.d("fail to stop scan","stopscan: "+e.getStackTrace().toString());
+    }
+
+  }
 
 
 
   @Override
   public void onCreate() {
     super.onCreate();
-
+    Log.i("BeaconDeyectService", "onCreate: ");
     mContext = getBaseContext();
 
     ArrayList<Beacon> beacons = MainActivity.getDatabaseService().getBeacons();
@@ -153,7 +150,7 @@ public class BeaconDetectService extends Service {
 //            }, 1000, 1000, MILLISECONDS);
 
 
-    return Service.START_NOT_STICKY;
+    return Service.START_STICKY;
   }
 
   static void requestBluetoothScan() {

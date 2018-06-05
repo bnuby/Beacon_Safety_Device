@@ -1,6 +1,7 @@
 package com.example.gibson.myapplication.Fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ComponentName;
@@ -17,6 +18,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -24,6 +26,7 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,7 +34,6 @@ import com.example.gibson.myapplication.CallingActivity;
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Contact;
 import com.example.gibson.myapplication.R;
-import com.example.gibson.myapplication.ReceiveBeaconActivity;
 import com.example.gibson.myapplication.Services.BeaconDetectService;
 import com.example.gibson.myapplication.Services.RequestManager;
 import com.example.gibson.myapplication.Services.SinchLoginService;
@@ -69,6 +71,8 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
       callUser(getContext(), contacts.get(position).recipientID );
     }
   };
+
+
 
   public static ContactFragment getFragment() {
     if (contactFragment == null)
@@ -126,7 +130,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
         nameET = dialog_layout.findViewById(R.id.nameET);
         usernameET = dialog_layout.findViewById(R.id.usernameET);
         Button addBtn = dialog_layout.findViewById(R.id.addBtn);
-        Button cancelBtn = dialog_layout.findViewById(R.id.cancelBtn);
+        // Button cancelBtn = dialog_layout.findViewById(R.id.cancelBtn);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -139,12 +143,12 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           }
         });
 
-        cancelBtn.setOnClickListener(new View.OnClickListener() {
+        /*cancelBtn.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             dialog.cancel();
           }
-        });
+        });*/
         dialog.show();
       }
     });
@@ -154,6 +158,30 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     ContactAdapter adapter = new ContactAdapter();
     listView.setAdapter(adapter);
     listView.setOnItemClickListener(itemClickListener);
+    listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+      @Override
+      public boolean onItemLongClick(AdapterView<?> parent, final View view, final int position, long id) {
+        PopupMenu contact_menu=new PopupMenu(getActivity(), view);
+        contact_menu.getMenuInflater().inflate(R.menu.contact_popupmenu,contact_menu.getMenu());
+        contact_menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()){
+              case R.id.delete:
+                Contact name=contacts.get(position);
+                RequestManager.deleteContact(MainActivity.user, name);
+                Toast.makeText(getContext(),"delete",Toast.LENGTH_LONG).show();
+                break;
+
+            }
+            return true;
+          }
+        });
+        contact_menu.show();
+        return false;
+      }
+    });
+
 //    update_contact_list();
 
     RequestManager.getContact(MainActivity.user);
@@ -183,28 +211,30 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
               new Runnable() {
                 @Override
                 public void run() {
-                  Log.v("Call", ""+call.getState());
-                  if(ReceiveBeaconActivity.cancel){
+                  Log.v("callStateListener Call", ""+call.getState());
+                  if(DogFragment.cancel){
                     callStateListener.shutdown();
                     endcall();
+                    DogFragment.stopBeaconService();
                     return;
                   }
                   if(call.getState()==CallState.ENDED){
                     callStateListener.shutdown();
                     call.hangup();
-                    ReceiveBeaconActivity.startBeaconService();
+                    DogFragment.startBeaconService();
+                    DogFragment.startBeaconService();
                   }
 
                   if(call.getState() == CallState.ESTABLISHED) {
                     callStateListener.shutdown();
                     Log.v("Call", "Established");
-                    ((Activity)ReceiveBeaconActivity.mContext).runOnUiThread(new Runnable() {
+                    ((Activity) DogFragment.mContext).runOnUiThread(new Runnable() {
                       @Override
                       public void run() {
-                        ReceiveBeaconActivity.stopBeaconService();
-                        ReceiveBeaconActivity.stopMedia();
+                        DogFragment.stopBeaconService();
+                        DogFragment.stopMedia();
 //                        ReceiveBeaconActivity.stopVideo();
-                        changeCallingActivity(ReceiveBeaconActivity.mContext);
+                        changeCallingActivity(DogFragment.mContext);
                       }
                     });
                   }
@@ -213,6 +243,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
     } else
       changeCallingActivity(mContext);
   }
+
 
 
   public static void changeCallingActivity(Context mContext) {
@@ -274,50 +305,49 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
 //    intent.putExtra("callerId", callerId);
 //    intent.putExtra("recipientId", recipientId);
 //    startActivity(intent);
+  }
+
+  public class ContactAdapter extends BaseAdapter {
+
+    public ContactAdapter() {
+      super();
     }
 
-    public class ContactAdapter extends BaseAdapter {
+    @Override
+    public int getCount() {
+      return contacts.size();
+    }
 
-      public ContactAdapter() {
-        super();
+    @Override
+    public Contact getItem(int position) {
+      return contacts.get(position);
+    }
+
+    @Override
+    public long getItemId(int position) {
+      return position;
+    }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+
+      if(convertView == null) {
+        convertView = getLayoutInflater().inflate(R.layout.contact_list, parent, false);
       }
 
-      @Override
-      public int getCount() {
-        return contacts.size();
-      }
-
-      @Override
-      public Contact getItem(int position) {
-        return contacts.get(position);
-      }
-
-      @Override
-      public long getItemId(int position) {
-        return position;
-      }
-
-      @Override
-      public View getView(int position, View convertView, ViewGroup parent) {
-
-        if(convertView == null) {
-          convertView = getLayoutInflater().inflate(R.layout.contact_list, parent, false);
-        }
-
-        TextView name = convertView.findViewById(R.id.contactTV);
-        name.setText(contacts.get(position).name);
-        Log.v("name", contacts.get(position).name);
-        Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
+      TextView name = convertView.findViewById(R.id.contactTV);
+      name.setText(contacts.get(position).name);
+      Log.v("name", contacts.get(position).name);
+        /*Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(contacts.get(position));
-
         deleteBtn.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             Contact contact = (Contact) v.getTag();
             RequestManager.deleteContact(MainActivity.user, contact);
           }
-        });
-        return convertView;
-      }
+        });*/
+      return convertView;
     }
+  }
 }

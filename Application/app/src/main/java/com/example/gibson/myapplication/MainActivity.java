@@ -36,8 +36,8 @@ import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Fragment.AccountFragment;
 import com.example.gibson.myapplication.Fragment.BeaconFragment;
 import com.example.gibson.myapplication.Fragment.ContactFragment;
-import com.example.gibson.myapplication.Fragment.MainPageFragment;
 import com.example.gibson.myapplication.Fragment.SettingFragment;
+import com.example.gibson.myapplication.Fragment.DogFragment;
 import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.DatabaseService;
 import com.example.gibson.myapplication.Services.ListenArmService;
@@ -256,7 +256,7 @@ public class MainActivity extends BeaconBaseActivity {
     public Fragment getItem(int position) {
       switch (position) {
         case 0:
-          return MainPageFragment.getFragment();
+          return DogFragment.getFragment();
         case 1:
           return ContactFragment.getFragment();
         case 2:
