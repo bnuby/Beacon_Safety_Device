@@ -184,19 +184,15 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                 @Override
                 public void run() {
                   Log.v("Call", ""+call.getState());
+                  if(ReceiveBeaconActivity.cancel){
+                    callStateListener.shutdown();
+                    endcall();
+                    return;
+                  }
                   if(call.getState()==CallState.ENDED){
                     callStateListener.shutdown();
                     call.hangup();
-                    if(ReceiveBeaconActivity.cancel){
-                      return;
-                    }
-                    else
-                      callUser(mContext, user);
-                    try{
-                      ReceiveBeaconActivity.startBeaconService();
-                    }catch (Exception e){
-                      Log.i(TAG, "run: error"+e.getStackTrace().toString());
-                    }
+                    ReceiveBeaconActivity.startBeaconService();
                   }
 
                   if(call.getState() == CallState.ESTABLISHED) {

@@ -243,9 +243,9 @@ public class CallingActivity extends AppCompatActivity {
     private void addVideoViews() {
         final VideoController vc = sinchBinder.getVideoController();
         if (vc != null) {
-//            removeAllView();
             localView = (RelativeLayout) findViewById(R.id.localVideo);
             view = (LinearLayout) findViewById(R.id.remoteVideo);
+            removeAllView();
             localView.addView(vc.getLocalView());
             localView.setOnClickListener(new View.OnClickListener() {
                 @Override
