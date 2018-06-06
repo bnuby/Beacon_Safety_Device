@@ -59,6 +59,7 @@ public class BeaconDetectService extends Service {
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
+          Log.v("test1",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
           if(MainActivity.mSharedPreferences.getFloat("distance", 1) >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
             DogFragment.playMedia(R.raw.dog2, 15);

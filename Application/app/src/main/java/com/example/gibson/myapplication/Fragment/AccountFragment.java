@@ -111,6 +111,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
             SharedPreferences.Editor editor = MainActivity.mSharedPreferences.edit();
             editor.putFloat("distance", Float.valueOf(distanceET.getText().toString()));
             editor.commit();
+            editor.apply();
+            Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
           }
         });
       }
@@ -181,12 +183,12 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
                 break;
               case R.id.delete:
                 String mac;
-                int i = Integer.parseInt(view.getTag() + "");
-                mac = beacons.get(i).MAC;
+
+                mac = beacons.get(position).MAC;
                 long status = MainActivity.getDatabaseService().deleteBeacon(mac);
                 RequestManager.deleteBeaconData(MainActivity.user, beacons.get(position));
                 if (status == 1) {
-                  beacons.remove(i);
+                  beacons.remove(position);
                   beacon_listView.invalidateViews();
                 }
                 Toast.makeText(accountView.getContext(), "delete", Toast.LENGTH_LONG).show();
