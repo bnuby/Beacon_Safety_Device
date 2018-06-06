@@ -112,7 +112,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
     beacon_listView.setAdapter(adapter);
     beacon_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
       @Override
-      public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+      public void onItemClick(AdapterView<?> parent, final View view, final int position, long id) {
         PopupMenu  accout_menu=new PopupMenu(getActivity(), view);
         accout_menu.getMenuInflater().inflate(R.menu.account_menu,accout_menu.getMenu());
         accout_menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -126,7 +126,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
                 nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
                 distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
                 macET = new EditText[6];
-                beacon = beacons.get(0);
+                beacon = beacons.get(position);
                 nameET.setText(beacon.name);
                 String[] macArray = beacon.MAC.split(":");
                 distanceET.setText(beacon.alert_distance + "");
@@ -151,7 +151,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
                 int i = Integer.parseInt(view.getTag() + "");
                 mac = beacons.get(i).MAC;
                 long status = MainActivity.getDatabaseService().deleteBeacon(mac);
-                RequestManager.deleteBeaconData(MainActivity.user, beacons.get(i));
+                RequestManager.deleteBeaconData(MainActivity.user, beacons.get(position));
                 if (status == 1) {
                   beacons.remove(i);
                   beacon_listView.invalidateViews();
