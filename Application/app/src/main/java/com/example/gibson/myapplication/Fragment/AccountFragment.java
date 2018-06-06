@@ -91,34 +91,34 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
         MainActivity.getDatabaseService().logout();
         ((Activity) getContext()).finish();
         LoginActivity.stopSinch();
-
 //        RequestManager.logoutRequest();
 //        Toast.makeText(getContext(), "Logout!", Toast.LENGTH_SHORT).show();
-        distanceET = accountView.findViewById(R.id.distanceET);
-        distanceET.addTextChangedListener(new TextWatcher() {
-          @Override
-          public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-          }
-
-          @Override
-          public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-          }
-
-          @Override
-          public void afterTextChanged(Editable s) {
-            SharedPreferences.Editor editor = MainActivity.mSharedPreferences.edit();
-            editor.putFloat("distance", Float.valueOf(distanceET.getText().toString()));
-            editor.commit();
-            editor.apply();
-            Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
-          }
-        });
       }
     });
 
+    distanceET = accountView.findViewById(R.id.distanceET);
+    distanceET.setText(String.valueOf(MainActivity.mSharedPreferences.getFloat("distance",1)));
+    distanceET.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+        Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
+        SharedPreferences.Editor editor = MainActivity.mSharedPreferences.edit();
+        editor.putFloat("distance", Float.valueOf(distanceET.getText().toString()));
+        editor.commit();
+        editor.apply();
+        Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
+      }
+    });
 
     /*receiveBtn.setOnClickListener(new View.OnClickListener() {
       @Override
