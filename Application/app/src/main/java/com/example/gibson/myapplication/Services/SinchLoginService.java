@@ -1,10 +1,12 @@
 package com.example.gibson.myapplication.Services;
 
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
@@ -98,6 +100,15 @@ public class SinchLoginService extends Service {
       intent.putExtra("fromImcomming",true);
       intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY);
 //      intent.setComponent(new ComponentName(getApplicationContext().getPackageName(), CallingActivity.class.getName()));
+
+      PowerManager pm=(PowerManager) getSystemService(getBaseContext().POWER_SERVICE);
+      PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, TAG);
+      wl.acquire();
+      wl.release();
+      KeyguardManager km= (KeyguardManager) getSystemService(getBaseContext().KEYGUARD_SERVICE);
+      KeyguardManager.KeyguardLock kl = km.newKeyguardLock("unLock");
+      kl.disableKeyguard();
+
       SinchLoginService.this.startActivity(intent);
     }
   }
