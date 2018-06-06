@@ -84,36 +84,38 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="0.2"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="1">
 
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.4"
                 android:text="Beacon"
                 android:textSize="30sp" />
 
             <TextView
                 android:id="@+id/textView13"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
+                android:layout_weight="0.4"
                 android:text="Distance"
                 android:textSize="30sp" />
 
-            <TextView
-                android:id="@+id/textView14"
-                android:layout_width="wrap_content"
+            <EditText
+                android:id="@+id/distanceET"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="" />
+                android:layout_weight="0.18"
+                android:ems="10"
+                android:inputType="numberDecimal" />
 
             <Button
                 android:id="@+id/beacon_addbtn"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:layout_gravity="end"
-                android:layout_weight="0.01"
+                android:layout_weight="0"
                 android:background="@drawable/add"
                 android:onClick="onClick"
                 android:textSize="8sp" />

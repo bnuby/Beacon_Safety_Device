@@ -7,7 +7,6 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.example.gibson.myapplication.Fragment.BeaconFragment;
 import com.example.gibson.myapplication.Fragment.ContactFragment;
 import com.example.gibson.myapplication.LoginActivity;
 import com.example.gibson.myapplication.MainActivity;
@@ -239,7 +238,7 @@ public class RequestManager {
                             distance
                     );
                   }
-                  BeaconFragment.updateBeaconArray(beacons);
+//                  BeaconFragment.updateBeaconArray(beacons);
                 } catch (JSONException e) {
                   e.printStackTrace();
                 }
