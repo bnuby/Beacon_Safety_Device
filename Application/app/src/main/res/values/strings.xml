@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">BabySafe</string>
     <string name="name">Name</string>
     <string name="mac">MAC</string>
     <string name="distance">Distance</string>

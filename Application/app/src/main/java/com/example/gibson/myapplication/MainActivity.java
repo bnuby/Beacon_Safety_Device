@@ -2,8 +2,10 @@ package com.example.gibson.myapplication;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -34,9 +36,7 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.example.gibson.myapplication.AbstractClass.BeaconBaseActivity;
 import com.example.gibson.myapplication.Fragment.AccountFragment;
-import com.example.gibson.myapplication.Fragment.BeaconFragment;
 import com.example.gibson.myapplication.Fragment.ContactFragment;
-import com.example.gibson.myapplication.Fragment.SettingFragment;
 import com.example.gibson.myapplication.Fragment.DogFragment;
 import com.example.gibson.myapplication.Model.User;
 import com.example.gibson.myapplication.Services.DatabaseService;
@@ -52,7 +52,7 @@ import org.json.JSONObject;
 
 public class MainActivity extends BeaconBaseActivity {
 
-  private final int NUM_PAGES = 4;
+  private final int NUM_PAGES = 3;
   public static final int BluetoothRequestCode = 2;
   public static User user;
   public static MQTT_SERVICE mqtt_service;
@@ -62,6 +62,7 @@ public class MainActivity extends BeaconBaseActivity {
   private TabLayout tabLayout;
   static RequestQueue requestQueue;
   public static boolean receiveMode;
+  public static SharedPreferences mSharedPreferences;
 
 
   public static RequestQueue getQueue() { return requestQueue; }
@@ -72,6 +73,8 @@ public class MainActivity extends BeaconBaseActivity {
 
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
+
+    mSharedPreferences = getSharedPreferences("com.example.gibson.myapplication", Context.MODE_PRIVATE);
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_viewpager);
     databaseService = new DatabaseService(this);
@@ -202,23 +205,23 @@ public class MainActivity extends BeaconBaseActivity {
     }
   }
 
-  @Override
-  public boolean onOptionsItemSelected(MenuItem item) {
-    Intent intent;
-    switch (item.getItemId()) {
-      case R.id.action_beacon:
-        intent = new Intent(this, BeaconFragment.class);
-        startActivity(intent);
-        break;
-
-      case R.id.action_setting:
-        intent = new Intent(this, SettingFragment.class);
-        startActivity(intent);
-        break;
-    }
-
-    return super.onOptionsItemSelected(item);
-  }
+//  @Override
+//  public boolean onOptionsItemSelected(MenuItem item) {
+//    Intent intent;
+//    switch (item.getItemId()) {
+//      case R.id.action_beacon:
+//        intent = new Intent(this, BeaconFragment.class);
+//        startActivity(intent);
+//        break;
+//
+//      case R.id.action_setting:
+//        intent = new Intent(this, SettingFragment.class);
+//        startActivity(intent);
+//        break;
+//    }
+//
+//    return super.onOptionsItemSelected(item);
+//  }
 
   public static void sendToast(String msg) {
     Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -245,7 +248,6 @@ public class MainActivity extends BeaconBaseActivity {
     String[] title = new String[]{
             getResources().getString(R.string.title_beacon) ,
             getResources().getString(R.string.title_contact),
-            getResources().getString(R.string.title_manage_beacon),
             getResources().getString(R.string.title_setting)};
 
     public ViewPagerAdapter(FragmentManager fm) {
@@ -260,8 +262,6 @@ public class MainActivity extends BeaconBaseActivity {
         case 1:
           return ContactFragment.getFragment();
         case 2:
-          return BeaconFragment.getFragment();
-        case 3:
           return AccountFragment.getFragment();
       }
       return null;

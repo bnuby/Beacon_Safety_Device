@@ -47,16 +47,14 @@ public class SettingFragment extends Fragment implements View.OnClickListener {
   EditText passwordET;
   Button loginBtn;
   Button registerBtn;
-
   Button mqtt_loginBtn;
 
 //  @Override
 //  protected void onCreate(@Nullable Bundle savedInstanceState) {
 //    super.onCreate(savedInstanceState);
 //    setContentView(R.layout.activity_setting);
-//
 //    init();
-//
+
 //    Toolbar toolbar = findViewById(R.id.settingTB);
 //    setSupportActionBar(toolbar);
 //    ActionBar actionBar = getSupportActionBar();

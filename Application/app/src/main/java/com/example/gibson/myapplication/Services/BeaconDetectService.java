@@ -61,7 +61,8 @@ public class BeaconDetectService extends Service {
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
-          if((double)i.get("alert_distance") >= calculateDistance(txPower, mRssi)) {
+          Log.v("test1",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
+          if(MainActivity.mSharedPreferences.getFloat("distance", 1) >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
 
             PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
