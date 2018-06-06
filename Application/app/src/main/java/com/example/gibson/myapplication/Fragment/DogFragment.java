@@ -9,6 +9,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.SwitchCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,14 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.ToggleButton;
 
 import com.example.gibson.myapplication.MainActivity;
 import com.example.gibson.myapplication.Model.Beacon;
 import com.example.gibson.myapplication.R;
 import com.example.gibson.myapplication.Services.BeaconDetectService;
+import com.example.gibson.myapplication.Services.RequestManager;
 import com.sinch.android.rtc.calling.Call;
 
 import java.util.ArrayList;
@@ -48,7 +51,7 @@ public class DogFragment extends Fragment{
   public static ImageView dog;
   public static Drawable sleepDog;
   public static Drawable angeryDog;
-  public ToggleButton recevingmodesw;
+  public SwitchCompat recevingmodesw;
   private static DogFragment mainPageFragment;
 
   public static DogFragment getFragment() {
@@ -78,6 +81,7 @@ public class DogFragment extends Fragment{
           startBeaconReceive();
           cancel=false;
         } else {
+          RequestManager.armAlarm(MainActivity.user,"safe");
           stopBeaconService();
           BeaconDetectService.stopscan();
           ContactFragment.endcall();

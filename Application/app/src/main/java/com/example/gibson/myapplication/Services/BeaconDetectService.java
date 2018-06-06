@@ -1,5 +1,6 @@
 package com.example.gibson.myapplication.Services;
 
+import android.app.KeyguardManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.BluetoothLeScanner;
@@ -11,6 +12,7 @@ import android.bluetooth.le.ScanSettings;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -63,12 +65,30 @@ public class BeaconDetectService extends Service {
           Log.v("test1",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
           if(distance >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
+
+            PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "wake");
+            wl.acquire();
+            wl.release();
+            KeyguardManager km= (KeyguardManager) mContext.getSystemService(mContext.KEYGUARD_SERVICE);
+            KeyguardManager.KeyguardLock kl = km.newKeyguardLock("unLock");
+            kl.disableKeyguard();
+
             DogFragment.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
             DogFragment.setAngryDog();
             ContactFragment.callUser(mContext, user);
           } else if (distance * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
+
+            PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
+            PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "wake");
+            wl.acquire();
+            wl.release();
+            KeyguardManager km= (KeyguardManager) mContext.getSystemService(mContext.KEYGUARD_SERVICE);
+            KeyguardManager.KeyguardLock kl = km.newKeyguardLock("unLock");
+            kl.disableKeyguard();
+
             DogFragment.playMedia(R.raw.dog1, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
             DogFragment.setAngryDog();
