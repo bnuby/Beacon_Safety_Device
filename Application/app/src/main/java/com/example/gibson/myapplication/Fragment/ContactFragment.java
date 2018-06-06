@@ -336,7 +336,8 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
       }
 
       TextView name = convertView.findViewById(R.id.contactTV);
-      name.setText(contacts.get(position).name);
+      String temp = contacts.get(position).name;
+      name.setText(temp.substring(0,1).toUpperCase()+temp.substring(1));
       Log.v("name", contacts.get(position).name);
         /*Button deleteBtn = convertView.findViewById(R.id.deleteBtn);
         deleteBtn.setTag(contacts.get(position));
