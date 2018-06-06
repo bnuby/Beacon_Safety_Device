@@ -24,10 +24,10 @@
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
+        android:layout_margin="5dp"
         android:background="@drawable/add"
-        android:textAlignment="center"
 
-        />
+        android:textAlignment="center" />
 
     <ListView
         android:id="@+id/contact_list"

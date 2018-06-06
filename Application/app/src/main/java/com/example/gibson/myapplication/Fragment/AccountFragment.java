@@ -1,6 +1,7 @@
 package com.example.gibson.myapplication.Fragment;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -101,30 +102,6 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
     macET = new EditText[6];
     beacon_listView = view.findViewById(R.id.beacon_list);
     beacons = new ArrayList<>();
-    beacon_listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-      @Override
-      public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        PopupMenu contact_menu=new PopupMenu(getActivity(), view);
-        contact_menu.getMenuInflater().inflate(R.menu.account_menu,contact_menu.getMenu());
-        contact_menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-          @Override
-          public boolean onMenuItemClick(MenuItem item) {
-            switch (item.getItemId()){
-              case R.id.delete:
-
-                break;
-              case R.id.edit:
-
-
-                break;
-
-            }
-            return true;
-          }
-        });
-        return false;
-      }
-    });
 
 //    beaconArray = MainActivity.getDatabaseService().getBeacons();
 
@@ -133,6 +110,61 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
     addBtn.setOnClickListener(this);
     AccountFragment.BeaconTableAdapter adapter = new AccountFragment.BeaconTableAdapter(accountView.getContext());
     beacon_listView.setAdapter(adapter);
+    beacon_listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, final View view, int position, long id) {
+        PopupMenu  accout_menu=new PopupMenu(getActivity(), view);
+        accout_menu.getMenuInflater().inflate(R.menu.account_menu,accout_menu.getMenu());
+        accout_menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+          @Override
+          public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()){
+              case R.id.edit:
+                Beacon beacon;
+
+                dialog_layout = getLayoutInflater().inflate(R.layout.dialog_beacon_update, null);
+                nameET = dialog_layout.findViewById(R.id.beacon_dialog_nameET);
+                distanceET = dialog_layout.findViewById(R.id.beacon_dialog_distanceET);
+                macET = new EditText[6];
+                beacon = beacons.get(0);
+                nameET.setText(beacon.name);
+                String[] macArray = beacon.MAC.split(":");
+                distanceET.setText(beacon.alert_distance + "");
+                for (int i = 1; i <= macET.length; i++) {
+                  macET[i - 1] = dialog_layout.findViewById(getResources().getIdentifier("dialog_beacon_macET" + i, "id", dialog_layout.getContext().getPackageName()));
+                  macET[i - 1].setText(macArray[i - 1]);
+                }
+                AlertDialog.Builder builder2 = new AlertDialog.Builder(accountView.getContext())
+                        .setView(dialog_layout)
+                        .setTitle("Add Beacon");
+                dialog_layout.findViewById(R.id.beacon_dialog_updateBtn).setTag(0);
+                dialog_layout.findViewById(R.id.beacon_dialog_updateBtn).setOnClickListener(AccountFragment.this);
+                dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn).setOnClickListener(AccountFragment.this);
+                dialog = builder2.create();
+                dialog.create();
+                dialog.show();
+
+                Toast.makeText(accountView.getContext(),"edit",Toast.LENGTH_LONG).show();
+                break;
+              case R.id.delete:
+                String mac;
+                int i = Integer.parseInt(view.getTag() + "");
+                mac = beacons.get(i).MAC;
+                long status = MainActivity.getDatabaseService().deleteBeacon(mac);
+                RequestManager.deleteBeaconData(MainActivity.user, beacons.get(i));
+                if (status == 1) {
+                  beacons.remove(i);
+                  beacon_listView.invalidateViews();
+                }
+                Toast.makeText(accountView.getContext(),"delete",Toast.LENGTH_LONG).show();
+                break;
+            }
+            return false;
+          }
+        });
+        accout_menu.show();
+      }
+    });
     beacon_listView.setMotionEventSplittingEnabled(true);
     RequestManager.getBeaconData(MainActivity.user);
   }
@@ -354,7 +386,6 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
     public long getItemId(int i) {
       return i;
     }
-
     @Override
     public View getView(final int i, View view, ViewGroup viewGroup) {
       View view1 = view;
@@ -389,6 +420,8 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
 //      } catch (JSONException e) {
 //        e.printStackTrace();
 //      }
+
+
 
       return view1;
     }

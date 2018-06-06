@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.example.gibson.myapplication"
+        applicationId 'com.example.gibson.myapplication'
         minSdkVersion 21
         targetSdkVersion 27
         versionCode 1
@@ -17,7 +17,6 @@ android {
         }
     }
     buildToolsVersion '27.0.3'
-
 //
 //    sourceSets {
 //        main {
@@ -30,6 +29,8 @@ android {
 //                    ]
 //        }
 //    }
+    productFlavors {
+    }
 }
 
 
