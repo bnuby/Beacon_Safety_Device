@@ -113,7 +113,13 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
       public void afterTextChanged(Editable s) {
         Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
         SharedPreferences.Editor editor = MainActivity.mSharedPreferences.edit();
-        editor.putFloat("distance", Float.valueOf(distanceET.getText().toString()));
+        float distance = 0;
+        try {
+          distance = Float.valueOf(distanceET.getText().toString());
+        } catch (Exception e) {
+          distance = 1.0f;
+        }
+        editor.putFloat("distance", distance);
         editor.commit();
         editor.apply();
         Log.v("test2",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
