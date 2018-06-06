@@ -18,7 +18,10 @@
             android:layout_height="wrap_content"
             android:paddingBottom="10dp"
             android:paddingTop="10dp"
-            app:tabIndicatorColor="@color/colorPrimary">
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/colorPrimary"
+            app:tabMaxWidth="0dp"
+            app:tabMinWidth="60dp">
 
             <android.support.design.widget.TabItem
                 android:id="@+id/tabItem"

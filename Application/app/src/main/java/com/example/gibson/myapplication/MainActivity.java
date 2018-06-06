@@ -276,31 +276,33 @@ public class MainActivity extends BeaconBaseActivity {
       View v = getLayoutInflater().inflate(R.layout.custom_tab, null);
       TextView tab_item = v.findViewById(R.id.tab_item);
       tab_item.setText(title[position]);
-      Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby);
+//      Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby);
 
-      switch(position) {
-        case 0:
-          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby);
-//          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.baby);
-          break;
-        case 1:
-          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.contacts);
-//          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.contacts);
-          break;
-        case 2:
-          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby);
-//          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.baby);
-          break;
-        case 3:
-          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.account);
-//          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.account);
-          break;
-      }
-      bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, true);
-      tab_item.setCompoundDrawablesWithIntrinsicBounds(null, null, null, new BitmapDrawable(getResources(), bitmap));
+//      switch(position) {
+//        case 0:
+//          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby).;
+////          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.baby);
+//          break;
+//        case 1:
+//          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.contacts);
+////          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.contacts);
+//          break;
+//        case 2:
+//          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.baby);
+////          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.baby);
+//          break;
+//        case 3:
+//          bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.account);
+////          tab_item.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, R.drawable.account);
+//          break;
+//      }
+//      bitmap = Bitmap.createScaledBitmap(bitmap, 80, 80, true);
+//      tab_item.setCompoundDrawablesWithIntrinsicBounds(null, null, null, new BitmapDrawable(getResources(), bitmap));
 
       return v;
     }
+
+
 
 
 
