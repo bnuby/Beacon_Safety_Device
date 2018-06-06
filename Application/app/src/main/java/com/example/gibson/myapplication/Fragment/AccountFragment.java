@@ -137,7 +137,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener, V
                 AlertDialog.Builder builder2 = new AlertDialog.Builder(accountView.getContext())
                         .setView(dialog_layout)
                         .setTitle("Add Beacon");
-                dialog_layout.findViewById(R.id.beacon_dialog_updateBtn).setTag(0);
+                dialog_layout.findViewById(R.id.beacon_dialog_updateBtn).setTag(position);
                 dialog_layout.findViewById(R.id.beacon_dialog_updateBtn).setOnClickListener(AccountFragment.this);
                 dialog_layout.findViewById(R.id.beacon_dialog_cancelBtn).setOnClickListener(AccountFragment.this);
                 dialog = builder2.create();
