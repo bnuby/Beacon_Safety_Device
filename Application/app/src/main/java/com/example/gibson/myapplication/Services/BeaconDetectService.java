@@ -54,19 +54,20 @@ public class BeaconDetectService extends Service {
       byte[] manufacturerData = mScanRecord.getManufacturerSpecificData(224);
       int mRssi = result.getRssi();
       int txPower = result.getScanRecord().getTxPowerLevel();
+      float distance = MainActivity.mSharedPreferences.getFloat("distance", 1);
       String user = "ben";
       Log.v("Beacon Address", result.getDevice().getAddress());
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
           Log.v("test1",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
-          if(MainActivity.mSharedPreferences.getFloat("distance", 1) >= calculateDistance(txPower, mRssi)) {
+          if(distance >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
             DogFragment.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
             DogFragment.setAngryDog();
             ContactFragment.callUser(mContext, user);
-          } else if ((double)i.get("alert_distance") * 1.4 >= calculateDistance(txPower, mRssi)) {
+          } else if (distance * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
             DogFragment.playMedia(R.raw.dog1, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
