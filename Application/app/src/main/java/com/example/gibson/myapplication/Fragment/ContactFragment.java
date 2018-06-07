@@ -137,6 +137,10 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           public void onClick(View v) {
             String name = nameET.getText().toString();
             String recipientID = usernameET.getText().toString();
+            if((name.equals("") && recipientID.equals("")) || (name.isEmpty()) && recipientID.isEmpty()) {
+              MainActivity.sendToast("Username Or Name Must be fill!");
+              return;
+            }
             RequestManager.registerContact(MainActivity.user,
                     new Contact(recipientID, name));
             dialog.dismiss();
