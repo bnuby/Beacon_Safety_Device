@@ -130,7 +130,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
         nameET = dialog_layout.findViewById(R.id.nameET);
         usernameET = dialog_layout.findViewById(R.id.usernameET);
         Button addBtn = dialog_layout.findViewById(R.id.addBtn);
-        // Button cancelBtn = dialog_layout.findViewById(R.id.cancelBtn);
+        Button cancelBtn = dialog_layout.findViewById(R.id.cancelBtn);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
           @Override
@@ -143,12 +143,12 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           }
         });
 
-        /*cancelBtn.setOnClickListener(new View.OnClickListener() {
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
           @Override
           public void onClick(View v) {
             dialog.cancel();
           }
-        });*/
+        });
         dialog.show();
       }
     });
