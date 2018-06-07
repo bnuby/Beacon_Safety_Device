@@ -76,6 +76,11 @@ public class DogFragment extends Fragment{
     recevingmodesw.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
       @Override
       public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(ContactFragment.contacts.size() == 0) {
+          recevingmodesw.setChecked(MainActivity.receiveMode);
+          MainActivity.sendToast("No Contacts");
+          return;
+        }
         if (isChecked) {
           MainActivity.receiveMode=true;
           startBeaconReceive();

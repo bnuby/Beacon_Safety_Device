@@ -58,7 +58,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
   static Call call;
   static ScheduledExecutorService callStateListener;
   ArrayList<String> strings = new ArrayList<>();
-  static ArrayList<Contact> contacts;
+  public static ArrayList<Contact> contacts;
   private Button addBtn;
   private static SinchLoginService.SinchBinder sinchBinder;
   private static ContactFragment contactFragment;
@@ -138,7 +138,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
             String name = nameET.getText().toString();
             String recipientID = usernameET.getText().toString();
             RequestManager.registerContact(MainActivity.user,
-                    new Contact(name, recipientID));
+                    new Contact(recipientID, name));
             dialog.dismiss();
           }
         });
@@ -178,7 +178,7 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
           }
         });
         contact_menu.show();
-        return false;
+        return true;
       }
     });
 

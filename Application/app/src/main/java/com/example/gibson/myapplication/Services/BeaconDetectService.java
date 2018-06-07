@@ -36,6 +36,7 @@ import java.util.concurrent.TimeUnit;
 public class BeaconDetectService extends Service {
   static ArrayList<HashMap<String,Object>> beaconList;
   public static RequestQueue queue;
+  private static int no = 0;
 
 
   static BluetoothAdapter mBluetoothAdapter;
@@ -51,7 +52,6 @@ public class BeaconDetectService extends Service {
   protected static ScanCallback mScanCallback = new ScanCallback() {
     @Override
     public void onScanResult(int callbackType, ScanResult result) {
-
       ScanRecord mScanRecord = result.getScanRecord();
       byte[] manufacturerData = mScanRecord.getManufacturerSpecificData(224);
       int mRssi = result.getRssi();
@@ -59,13 +59,14 @@ public class BeaconDetectService extends Service {
       float distance = MainActivity.mSharedPreferences.getFloat("distance", 1);
       String user = "ben";
       Log.v("Beacon Address", result.getDevice().getAddress());
+
       for(HashMap<String, Object> i : beaconList) {
         if(result.getDevice().getAddress().equalsIgnoreCase((String) i.get("mac"))) {
           Log.v("test", "" + calculateDistance(txPower, mRssi));
           Log.v("test1",""+ MainActivity.mSharedPreferences.getFloat("distance",1));
           if(distance >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
-
+            user = ContactFragment.contacts.get(no).recipientID;
             PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "wake");
             wl.acquire();
@@ -80,9 +81,11 @@ public class BeaconDetectService extends Service {
             RequestManager.armAlarm(MainActivity.user,"danger");
             ContactFragment.callUser(mContext, user);
             RequestManager.armAlarm(MainActivity.user,"danger");
+            no = (no + 1) %ContactFragment.contacts.size();
+
           } else if (distance * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
-
+            user = ContactFragment.contacts.get(no).recipientID;
             PowerManager pm=(PowerManager) mContext.getSystemService(mContext.POWER_SERVICE);
             PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.ACQUIRE_CAUSES_WAKEUP | PowerManager.SCREEN_DIM_WAKE_LOCK, "wake");
             wl.acquire();
@@ -97,6 +100,8 @@ public class BeaconDetectService extends Service {
             RequestManager.armAlarm(MainActivity.user,"warning");
             ContactFragment.callUser(mContext, user);
             RequestManager.armAlarm(MainActivity.user,"warning");
+            no = (no + 1) %ContactFragment.contacts.size();
+
           } else {
             DogFragment.stopMedia();
             RequestManager.armAlarm(MainActivity.user,"safe");
