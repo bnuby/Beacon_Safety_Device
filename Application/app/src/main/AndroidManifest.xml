@@ -46,10 +46,13 @@
         <activity android:name=".MainActivity"></activity>
         <activity android:name=".RegisterActivity"></activity>
         <activity android:name=".CallingActivity"></activity>
-        <activity android:name=".ReceiveBeaconActivity"></activity>
         <service android:name=".Services.ListenArmService"></service>
         <service android:name=".Services.SinchLoginService" />
         <service android:name=".Services.BeaconDetectService"/>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 

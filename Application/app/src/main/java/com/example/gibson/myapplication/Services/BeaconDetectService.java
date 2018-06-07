@@ -77,7 +77,9 @@ public class BeaconDetectService extends Service {
             DogFragment.playMedia(R.raw.dog2, 15);
             RequestManager.armAlarm(MainActivity.user,"danger");
             DogFragment.setAngryDog();
+            RequestManager.armAlarm(MainActivity.user,"danger");
             ContactFragment.callUser(mContext, user);
+            RequestManager.armAlarm(MainActivity.user,"danger");
           } else if (distance * 1.4 >= calculateDistance(txPower, mRssi)) {
             mBluetoothLeScanner.stopScan(mScanCallback);
 
@@ -89,10 +91,12 @@ public class BeaconDetectService extends Service {
             KeyguardManager.KeyguardLock kl = km.newKeyguardLock("unLock");
             kl.disableKeyguard();
 
-            DogFragment.playMedia(R.raw.dog1, 10);
+            DogFragment.playMedia(R.raw.dog2, 10);
             RequestManager.armAlarm(MainActivity.user,"warning");
             DogFragment.setAngryDog();
+            RequestManager.armAlarm(MainActivity.user,"warning");
             ContactFragment.callUser(mContext, user);
+            RequestManager.armAlarm(MainActivity.user,"warning");
           } else {
             DogFragment.stopMedia();
             RequestManager.armAlarm(MainActivity.user,"safe");

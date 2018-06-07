@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:fontFamily="@font/myfont"
         android:hint="Recipient Name"
         android:inputType="textPersonName"
         android:textAlignment="center" />
@@ -19,6 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:ems="10"
+        android:fontFamily="@font/myfont"
         android:hint="Recipient Username"
         android:inputType="textPersonName"
         android:textAlignment="center" />
@@ -36,6 +38,7 @@
             android:layout_margin="10dp"
             android:layout_weight="0.5"
             android:background="@drawable/register_button"
+            android:fontFamily="@font/myfont"
             android:text="Cancel" />
 
         <Button
@@ -45,6 +48,7 @@
             android:layout_margin="10dp"
             android:layout_weight="0.5"
             android:background="@drawable/default_button"
+            android:fontFamily="@font/myfont"
             android:text="Add" />
     </LinearLayout>
 </LinearLayout>
