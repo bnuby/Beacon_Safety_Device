@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.Ringtone;
 import android.media.RingtoneManager;
@@ -134,6 +135,7 @@ public class CallingActivity extends AppCompatActivity {
 
             Log.i(TAG, "onCreate: Income");
             button.setText("hang on");
+            button.setBackgroundColor(Color.rgb(0, 255, 0));
         }
 
 
@@ -142,7 +144,6 @@ public class CallingActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String KK;
                 call =sinchBinder.getCall(recipientId);
                 if(call!=null) {
                     if (call.getState() == CallState.ESTABLISHED) {
@@ -210,6 +211,7 @@ public class CallingActivity extends AppCompatActivity {
             }
             Log.i(TAG, "onCallEstablished");
             button.setText("hangup");
+            button.setBackgroundColor(Color.rgb(255, 0, 0));
             audioManager.setMicrophoneMute(false);
             audioManager.setSpeakerphoneOn(true);
             setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);

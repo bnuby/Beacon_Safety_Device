@@ -222,7 +222,6 @@ public class ContactFragment extends Fragment implements View.OnClickListener {
                     callStateListener.shutdown();
                     call.hangup();
                     DogFragment.startBeaconService();
-                    DogFragment.startBeaconService();
                   }
 
                   if(call.getState() == CallState.ESTABLISHED) {

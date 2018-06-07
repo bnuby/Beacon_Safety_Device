@@ -79,16 +79,20 @@ public class DogFragment extends Fragment{
         if (isChecked) {
           MainActivity.receiveMode=true;
           startBeaconReceive();
+          recevingmodesw.setText("On");
           cancel=false;
         } else {
-          RequestManager.armAlarm(MainActivity.user,"safe");
+          recevingmodesw.setText("Off");
           stopBeaconService();
+          RequestManager.armAlarm(MainActivity.user,"safe");
           BeaconDetectService.stopscan();
           ContactFragment.endcall();
           stopMedia();
+          RequestManager.armAlarm(MainActivity.user,"safe");
           MainActivity.receiveMode=false;
           setSleepDog();
           cancel = true;
+          RequestManager.armAlarm(MainActivity.user,"safe");
         }
       }
     });
