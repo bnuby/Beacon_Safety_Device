@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     tools:context=".LoginFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -23,6 +24,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
+            android:fontFamily="@font/myfont"
             android:hint="Username"
             android:inputType="textPersonName" />
 
@@ -32,6 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:ems="10"
+            android:fontFamily="@font/myfont"
             android:hint="Password"
             android:inputType="textPassword" />
 
@@ -49,7 +52,9 @@
                 android:layout_margin="5dp"
                 android:layout_weight="0.5"
                 android:background="@drawable/login_button"
+                android:fontFamily="@font/myfont"
                 android:text="Login"
+                android:textColor="@android:color/white"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +69,8 @@
                 android:layout_margin="5dp"
                 android:layout_weight="0.5"
                 android:background="@drawable/register_button"
+                android:fontFamily="@font/myfont"
+                android:textColor="@android:color/white"
                 android:text="Register"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

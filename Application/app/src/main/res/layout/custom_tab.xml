@@ -5,14 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+
     android:weightSum="1">
 
     <TextView
         android:id="@+id/tab_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:fontFamily="@font/myfont"
         android:text="Text"
         android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

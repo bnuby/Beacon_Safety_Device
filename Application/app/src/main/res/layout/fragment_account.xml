@@ -7,6 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="1"
+
     tools:context=".Fragment.AccountFragment">
 
     <!-- TODO: Update blank fragment layout -->
@@ -15,7 +16,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.3"
-        android:background="#ffc36f"
+        android:background="#2992FF"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingStart="50dp"
@@ -28,8 +29,9 @@
             android:id="@+id/imageView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="0.3"
-            android:src="@drawable/account" />
+            android:layout_weight="0.2"
+
+            android:src="@drawable/account3" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -44,6 +46,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:fontFamily="@font/myfont"
                 android:text="TextView"
                 android:textColor="#FFFFFF"
                 android:textSize="24sp"
@@ -54,6 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="0"
+                android:fontFamily="@font/myfont"
                 android:text="TextView"
                 android:textColor="@android:color/background_light"
                 tools:text="Caller" />
@@ -66,8 +70,11 @@
             android:layout_marginBottom="10dp"
             android:layout_marginTop="10dp"
             android:layout_weight="0.3"
-            android:background="@drawable/register_button"
+            android:background="@drawable/login_out"
+            android:fontFamily="@font/myfont"
+
             android:text="Log Out"
+            android:textColor="@android:color/black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -91,6 +98,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
+                android:fontFamily="@font/myfont"
                 android:text="Beacon"
                 android:textSize="30sp" />
 
@@ -99,24 +107,25 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="0.4"
+                android:fontFamily="@font/myfont"
                 android:text="Distance"
-                android:textSize="30sp" />
+                android:textSize="28sp" />
 
             <EditText
                 android:id="@+id/distanceET"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.18"
+                android:layout_weight="0.2"
                 android:ems="10"
                 android:inputType="numberDecimal" />
 
             <Button
                 android:id="@+id/beacon_addbtn"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="end"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
                 android:layout_weight="0"
                 android:background="@drawable/add"
+                android:gravity="bottom|center_vertical"
                 android:onClick="onClick"
                 android:textSize="8sp" />
         </LinearLayout>
